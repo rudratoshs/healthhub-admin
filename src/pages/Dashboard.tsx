@@ -8,15 +8,61 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import StatCard from "@/components/StatCard";
 import { Users, Utensils, Calendar, TrendingUp } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
+const pieData = [
+  { name: "Active", value: 65, color: "#9b87f5" },
+  { name: "Inactive", value: 25, color: "#fec6a1" },
+  { name: "Pending", value: 10, color: "#d3e4fd" },
+];
+
+const areaData = [
+  { name: "Jan", users: 30, plans: 40 },
+  { name: "Feb", users: 45, plans: 55 },
+  { name: "Mar", users: 75, plans: 85 },
+  { name: "Apr", users: 85, plans: 95 },
+  { name: "May", users: 95, plans: 105 },
+  { name: "Jun", users: 115, plans: 125 },
+];
+
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
 
+  const chartConfig = {
+    users: {
+      label: "Users",
+      theme: {
+        light: "#9b87f5",
+        dark: "#7E69AB",
+      },
+    },
+    plans: {
+      label: "Meal Plans",
+      theme: {
+        light: "#fec6a1",
+        dark: "#FFA99F",
+      },
+    },
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-8">
       <div className="flex flex-col justify-between space-y-4 md:flex-row md:items-center md:space-y-0">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -63,103 +109,74 @@ const Dashboard: React.FC = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              Your most recent nutrition planning activities
-            </CardDescription>
+            <CardTitle>Growth Overview</CardTitle>
+            <CardDescription>User and meal plan growth over time</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <Utensils className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">New meal plan created</p>
-                  <p className="text-xs text-muted-foreground">
-                    You created a new meal plan for Sarah Johnson
-                  </p>
-                </div>
-                <div className="text-xs text-muted-foreground">2h ago</div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <Users className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">New client registered</p>
-                  <p className="text-xs text-muted-foreground">
-                    Michael Brown signed up for your services
-                  </p>
-                </div>
-                <div className="text-xs text-muted-foreground">5h ago</div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="rounded-full bg-primary/10 p-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">Progress update</p>
-                  <p className="text-xs text-muted-foreground">
-                    Emily Wilson reached 75% of her weight goal
-                  </p>
-                </div>
-                <div className="text-xs text-muted-foreground">1d ago</div>
-              </div>
-            </div>
+          <CardContent className="h-[300px]">
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={areaData}>
+                  <defs>
+                    <linearGradient id="usersGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9b87f5" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#9b87f5" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="plansGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#fec6a1" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#fec6a1" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="users"
+                    name="Users"
+                    stroke="#9b87f5"
+                    fillOpacity={1}
+                    fill="url(#usersGradient)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="plans"
+                    name="Meal Plans"
+                    stroke="#fec6a1"
+                    fillOpacity={1}
+                    fill="url(#plansGradient)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Upcoming Sessions</CardTitle>
-            <CardDescription>Your scheduled client sessions</CardDescription>
+            <CardTitle>User Status Distribution</CardTitle>
+            <CardDescription>Current user status breakdown</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between space-x-4">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-full bg-secondary/10 p-2">
-                    <Calendar className="h-4 w-4 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">David Williams</p>
-                    <p className="text-xs text-muted-foreground">
-                      Initial Nutrition Consultation
-                    </p>
-                  </div>
-                </div>
-                <div className="text-sm">Today, 2:00 PM</div>
-              </div>
-              <div className="flex items-center justify-between space-x-4">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-full bg-secondary/10 p-2">
-                    <Calendar className="h-4 w-4 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Jessica Miller</p>
-                    <p className="text-xs text-muted-foreground">
-                      Progress Review
-                    </p>
-                  </div>
-                </div>
-                <div className="text-sm">Tomorrow, 10:30 AM</div>
-              </div>
-              <div className="flex items-center justify-between space-x-4">
-                <div className="flex items-center space-x-4">
-                  <div className="rounded-full bg-secondary/10 p-2">
-                    <Calendar className="h-4 w-4 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Robert Taylor</p>
-                    <p className="text-xs text-muted-foreground">
-                      Meal Plan Adjustment
-                    </p>
-                  </div>
-                </div>
-                <div className="text-sm">Sep 15, 3:15 PM</div>
-              </div>
-            </div>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>

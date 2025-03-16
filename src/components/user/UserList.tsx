@@ -144,9 +144,9 @@ const UserList: React.FC = () => {
             {users?.data && users.data.length > 0 ? (
               users.data.map((user: User) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell className="font-medium">{user.name || "N/A"}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell className="capitalize">{user.role}</TableCell>
+                  <TableCell className="capitalize">{Array.isArray(user.role) ? user.role.join(', ') : user.role}</TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
                       ${user.status === 'active' ? 'bg-green-50 text-green-700' : 
@@ -195,7 +195,7 @@ const UserList: React.FC = () => {
         </Table>
       </div>
 
-      {users && users.last_page > 1 && (
+      {users && users.meta && users.meta.last_page > 1 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -205,21 +205,23 @@ const UserList: React.FC = () => {
               />
             </PaginationItem>
             
-            {Array.from({ length: users.last_page }).map((_, i) => (
-              <PaginationItem key={i + 1}>
+            {users.meta.links && users.meta.links.filter(link => 
+              !link.label.includes('Previous') && !link.label.includes('Next')
+            ).map((link, i) => (
+              <PaginationItem key={i}>
                 <PaginationLink 
-                  isActive={page === i + 1}
-                  onClick={() => setPage(i + 1)}
+                  isActive={link.active}
+                  onClick={() => setPage(parseInt(link.label))}
                 >
-                  {i + 1}
+                  {link.label}
                 </PaginationLink>
               </PaginationItem>
             ))}
             
             <PaginationItem>
               <PaginationNext 
-                onClick={() => setPage(p => Math.min(users.last_page, p + 1))}
-                className={page >= users.last_page ? "pointer-events-none opacity-50" : ""}
+                onClick={() => setPage(p => Math.min(users.meta.last_page, p + 1))}
+                className={page >= users.meta.last_page ? "pointer-events-none opacity-50" : ""}
               />
             </PaginationItem>
           </PaginationContent>
@@ -230,7 +232,7 @@ const UserList: React.FC = () => {
       {userToDelete && (
         <DeleteUserDialog
           userId={userToDelete.id}
-          userName={userToDelete.name}
+          userName={userToDelete.name || "this user"}
           isOpen={!!userToDelete}
           onOpenChange={(open) => !open && setUserToDelete(null)}
         />

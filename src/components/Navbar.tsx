@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, UserCog } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -21,6 +21,7 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { label: "Dashboard", path: "/dashboard" },
+    { label: "Users", path: "/users" },
     { label: "Meal Plans", path: "/meal-plans" },
     { label: "Clients", path: "/clients" },
     { label: "Analytics", path: "/analytics" },
@@ -31,6 +32,7 @@ const Navbar: React.FC = () => {
   };
 
   const getInitials = (name: string) => {
+    if (!name) return "NA";
     return name
       .split(" ")
       .map((part) => part[0])
@@ -69,20 +71,20 @@ const Navbar: React.FC = () => {
             New Meal Plan
           </Button>
           
-          {user && (
+          {user &&
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
-                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name || "NA"}`} alt={user.name || "User"} />
+                    <AvatarFallback>{getInitials(user.name || "NA")}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.name}</p>
+                    <p className="text-sm font-medium leading-none">{user.name || "Anonymous"}</p>
                     <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
@@ -99,7 +101,7 @@ const Navbar: React.FC = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
+          }
           
           <button
             className="inline-flex items-center justify-center p-2 text-gray-500 md:hidden"
