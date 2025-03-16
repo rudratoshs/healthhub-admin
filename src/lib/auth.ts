@@ -1,7 +1,7 @@
 import { toast } from "@/hooks/use-toast";
 import { LoginRequest, RegisterRequest, AuthResponse, ApiError, User } from "@/types/auth";
 
-const API_URL = "https://phpstack-1335001-5338259.cloudwaysapps.com/api"; // Updated API URL
+const API_URL = "https://phpstack-1335001-5338259.cloudwaysapps.com"; // Updated API URL
 
 // Helper to handle API errors
 const handleApiError = (error: any): never => {
