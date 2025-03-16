@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import AuthLayout from "@/components/AuthLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginRequest } from "@/types/auth";
+import { LockKeyhole, Mail } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -24,29 +24,36 @@ const formSchema = z.object({
 });
 
 const LoginIllustration = () => (
-  <div className="p-8 text-white">
-    <div className="mx-auto max-w-md">
+  <div className="relative p-8 text-white overflow-hidden">
+    {/* Background patterns */}
+    <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/20 rounded-full -mr-32 -mt-16 blur-2xl"></div>
+    <div className="absolute bottom-0 left-0 w-72 h-72 bg-accent/20 rounded-full -ml-32 -mb-16 blur-2xl"></div>
+    
+    <div className="relative mx-auto max-w-md">
       <img 
         src="/illustrations/healthy-food.svg" 
         alt="Healthy Food Illustration" 
-        className="mx-auto mb-8 w-64 animate-scale-in opacity-90"
+        className="mx-auto mb-8 w-72 floating"
       />
-      <h2 className="mb-4 text-2xl font-bold">Transform Your Diet Planning Experience</h2>
-      <p className="mb-6 text-white/80">
-        Log in to access your personalized dashboard and start creating amazing meal plans for your clients.
+      
+      <h2 className="mb-4 text-3xl font-bold animate-slide-in-left">Transform Your Diet Planning</h2>
+      
+      <p className="mb-8 text-white/90 text-lg animate-fade-in">
+        Create personalized meal plans and track client progress with our powerful platform.
       </p>
-      <div className="flex flex-wrap justify-center gap-4">
-        <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm backdrop-blur-sm">
-          <span className="h-2 w-2 rounded-full bg-accent"></span>
-          <span>Personalized Meal Plans</span>
+      
+      <div className="flex flex-wrap justify-center gap-3">
+        <div className="stagger-item flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm backdrop-blur-sm border border-white/10 shadow-lg hover:bg-white/20 transition-all duration-300">
+          <span className="h-2 w-2 rounded-full bg-accent pulse"></span>
+          <span>Meal Plans</span>
         </div>
-        <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm backdrop-blur-sm">
-          <span className="h-2 w-2 rounded-full bg-accent"></span>
+        <div className="stagger-item flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm backdrop-blur-sm border border-white/10 shadow-lg hover:bg-white/20 transition-all duration-300">
+          <span className="h-2 w-2 rounded-full bg-accent pulse"></span>
           <span>Nutrition Analytics</span>
         </div>
-        <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm backdrop-blur-sm">
-          <span className="h-2 w-2 rounded-full bg-accent"></span>
-          <span>Client Progress Tracking</span>
+        <div className="stagger-item flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm backdrop-blur-sm border border-white/10 shadow-lg hover:bg-white/20 transition-all duration-300">
+          <span className="h-2 w-2 rounded-full bg-accent pulse"></span>
+          <span>Progress Tracking</span>
         </div>
       </div>
     </div>
@@ -80,46 +87,87 @@ const Login: React.FC = () => {
       subtitle="Sign in to your account to continue"
       illustration={<LoginIllustration />}
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="you@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
-          </Button>
-        </form>
-      </Form>
-      <div className="mt-6 text-center text-sm">
-        <p className="text-gray-600">
-          Don't have an account?{" "}
-          <Link to="/register" className="font-medium text-primary hover:underline">
-            Sign up
-          </Link>
-        </p>
+      <div className="animate-scale-in">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Email</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                      <Input 
+                        placeholder="you@example.com" 
+                        className="pl-10 bg-muted/50 border border-input/50 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300" 
+                        {...field} 
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm font-medium">Password</FormLabel>
+                    <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <FormControl>
+                    <div className="relative">
+                      <LockKeyhole className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                      <Input 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="pl-10 bg-muted/50 border border-input/50 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-300" 
+                        {...field} 
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button 
+              type="submit" 
+              className="w-full gradient-btn text-white font-medium py-2.5"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
+        </Form>
+        
+        <div className="mt-8 text-center">
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-border flex-grow"></div>
+            <span className="mx-4 text-xs text-muted-foreground">OR CONTINUE WITH</span>
+            <div className="border-t border-border flex-grow"></div>
+          </div>
+          
+          <div className="mt-4 flex gap-4 justify-center">
+            <Button variant="outline" className="w-full card-hover" type="button">
+              <img src="/icons/google.svg" alt="Google" className="h-5 w-5 mr-2" /> Google
+            </Button>
+          </div>
+          
+          <div className="mt-8 text-sm">
+            <p className="text-muted-foreground">
+              Don't have an account?{" "}
+              <Link to="/register" className="font-medium text-primary hover:underline highlight-text">
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </AuthLayout>
   );
