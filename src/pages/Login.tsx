@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import AuthLayout from "@/components/AuthLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { LoginRequest } from "@/types/auth";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -64,7 +65,13 @@ const Login: React.FC = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await login(values);
+    // Explicitly cast the values to LoginRequest to ensure all required fields are present
+    const loginData: LoginRequest = {
+      email: values.email,
+      password: values.password,
+    };
+    
+    await login(loginData);
   };
 
   return (

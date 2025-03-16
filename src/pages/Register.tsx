@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import AuthLayout from "@/components/AuthLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { RegisterRequest } from "@/types/auth";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -69,7 +70,16 @@ const Register: React.FC = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await register(values);
+    // Explicitly cast the values to RegisterRequest to ensure all required fields are present
+    const registerData: RegisterRequest = {
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      password: values.password,
+      password_confirmation: values.password_confirmation,
+    };
+    
+    await register(registerData);
   };
 
   return (

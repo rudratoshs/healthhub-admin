@@ -1,33 +1,5 @@
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'client' | 'trainer';
-  created_at: string;
-  updated_at: string;
-}
+// This file will contain general API types or can be used as a barrel file
+// to re-export types from feature-specific type files
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
-  phone: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
-}
-
-export interface ApiError {
-  message: string;
-  errors?: Record<string, string[]>;
-}
+export * from './auth';

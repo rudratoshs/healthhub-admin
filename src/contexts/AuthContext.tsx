@@ -1,8 +1,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User } from "@/types/api";
+import { User } from "@/types/auth";
 import { getCurrentUser, isAuthenticated, login, logout, register } from "@/lib/auth";
-import { LoginRequest, RegisterRequest } from "@/types/api";
+import { LoginRequest, RegisterRequest } from "@/types/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
