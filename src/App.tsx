@@ -10,6 +10,10 @@ import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
 import DashboardLayout from "@/components/DashboardLayout";
+import Users from "@/pages/user/Users";
+import CreateUser from "@/pages/user/CreateUser";
+import EditUser from "@/pages/user/EditUser";
+import UserDetail from "@/pages/user/UserDetail";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,7 +37,12 @@ const App = () => (
             <Route path="/" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="dashboard" element={<Dashboard />} />
-              {/* Add more dashboard routes here */}
+              
+              {/* User Management Routes */}
+              <Route path="users" element={<Users />} />
+              <Route path="users/create" element={<CreateUser />} />
+              <Route path="users/:id" element={<UserDetail />} />
+              <Route path="users/:id/edit" element={<EditUser />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
