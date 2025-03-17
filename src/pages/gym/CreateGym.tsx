@@ -13,7 +13,15 @@ const CreateGym: React.FC = () => {
   const navigate = useNavigate();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: GymFormValues) => createGym(data),
+    mutationFn: (data: GymFormValues) => {
+      // Ensure all required fields are present
+      const gymData = {
+        name: data.name || "",
+        address: data.address || "",
+        phone: data.phone || ""
+      };
+      return createGym(gymData);
+    },
     onSuccess: () => {
       toast({
         title: "Success",

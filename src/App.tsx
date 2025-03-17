@@ -22,6 +22,11 @@ import EditGym from "@/pages/gym/EditGym";
 import GymDetail from "@/pages/gym/GymDetail";
 import GymUsers from "@/pages/gym/GymUsers";
 
+// Client Profile pages
+import ClientProfile from "@/pages/clientProfile/ClientProfile";
+import CreateClientProfile from "@/pages/clientProfile/CreateClientProfile";
+import EditClientProfile from "@/pages/clientProfile/EditClientProfile";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -50,6 +55,11 @@ const App = () => (
               <Route path="users/create" element={<CreateUser />} />
               <Route path="users/:id" element={<UserDetail />} />
               <Route path="users/:id/edit" element={<EditUser />} />
+              
+              {/* Client Profile Routes */}
+              <Route path="users/:id/profile" element={<ClientProfile />} />
+              <Route path="users/:id/profile/create" element={<CreateClientProfile />} />
+              <Route path="users/:id/profile/edit" element={<EditClientProfile />} />
               
               {/* Gym Management Routes */}
               <Route path="gyms" element={<Gyms />} />

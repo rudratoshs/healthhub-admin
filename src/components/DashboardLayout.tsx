@@ -24,7 +24,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-background to-primary-50/20">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-background to-primary-50/20 font-poppins">
       <Navbar />
       <main className="flex-1 p-4 md:p-6 transition-all duration-300 ease-in-out">
         <div className="mx-auto max-w-7xl">
