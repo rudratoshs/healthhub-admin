@@ -2,50 +2,15 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  ClientProfile,
-  getProfileValue,
-  Category,
-} from "@/types/clientProfile";
+import { ClientProfile, getProfileValue, Category } from "@/types/clientProfile";
 import clientProfileMapping from "@/constant/clientProfileMapping.json";
 import { motion } from "framer-motion";
 import {
-  Activity,
-  MapPin,
-  Heart,
-  User,
-  Weight,
-  Target,
-  Calendar,
-  Apple,
-  Coffee,
-  Clock,
-  Brain,
-  Award,
-  BookOpen,
-  Flag,
-  Droplet,
-  Moon,
-  Flame,
-  BarChart,
-  Utensils,
-  Sunrise,
-  Watch,
-  Briefcase,
-  ShoppingBag,
-  DollarSign,
-  Zap,
-  Trophy,
-  LineChart,
-  Clipboard,
-  Layers,
-  FileText,
-  Hash,
-  Crown,
-  Smile,
-  MessageSquare,
-  Sliders,
-  PieChart,
+  Activity, MapPin, Heart, User, Weight, Target, Calendar, Apple,
+  Coffee, Clock, Brain, Award, BookOpen, Flag, Droplet, Moon,
+  Flame, BarChart, Utensils, Sunrise, Watch, Briefcase, ShoppingBag,
+  DollarSign, Zap, Trophy, LineChart, Clipboard, Layers, FileText,
+  Hash, Crown, Smile, MessageSquare, Sliders, PieChart
 } from "lucide-react";
 
 interface ClientProfileDetailProps {
@@ -93,12 +58,10 @@ const CategoryIcons: Record<string, React.ReactNode> = {
   body_type: <User size={20} />,
   water_intake: <Droplet size={20} />,
   portion_size: <BarChart size={20} />,
-  weight_goal: <Weight size={20} />,
+  weight_goal: <Weight size={20} />
 };
 
-const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
-  profile,
-}) => {
+const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ profile }) => {
   // Helper function to get display value for options
   const getDisplayValue = (key: string, value: any, mapping: any): string => {
     if (Array.isArray(value) && value.length > 0) {
@@ -124,17 +87,13 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
   const getOptionsForField = (fieldName: string): string[] | null => {
     for (const categoryKey in profile.categories) {
       const category = profile.categories[categoryKey];
-      if (
-        category.fields &&
-        category.fields[fieldName] &&
-        category.fields[fieldName].options
-      ) {
+      if (category.fields && category.fields[fieldName] && category.fields[fieldName].options) {
         return category.fields[fieldName].options;
       }
     }
     return null;
   };
-
+  
   // Helper function to get value from categorized structure
   const getValue = <T extends any>(fieldName: string): T | null => {
     return getProfileValue<T>(profile, fieldName);
@@ -150,7 +109,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
     value: string | number | React.ReactNode;
     icon: React.ReactNode;
   }) => (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -174,7 +133,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
     value: string | React.ReactNode;
     icon: React.ReactNode;
   }) => (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -202,26 +161,24 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
     colorClass?: string;
     textColorClass?: string;
   }) => (
-    <motion.div
+    <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h3
-        className={`text-sm font-medium text-primary-800 mb-3 flex items-center ${textColorClass}`}
-      >
+      <h3 className={`text-sm font-medium text-primary-800 mb-3 flex items-center ${textColorClass}`}>
         {iconComponent}
         {label}
       </h3>
       <div className="flex flex-wrap gap-2">
         {values && values.length > 0 ? (
           values.map((item, index) => (
-            <Badge key={index} variant="outline" className={`${colorClass}`}>
-              {getDisplayValue(
-                label.toLowerCase().replace(/ /g, "_"),
-                item,
-                clientProfileMapping
-              )}
+            <Badge
+              key={index}
+              variant="outline"
+              className={`${colorClass}`}
+            >
+              {getDisplayValue(label.toLowerCase().replace(/ /g, "_"), item, clientProfileMapping)}
             </Badge>
           ))
         ) : (
@@ -234,7 +191,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
   // Specific section renderer for Basic Information
   const renderBasicInformation = (category: Category) => {
     const data = category.data;
-
+    
     return (
       <>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -261,11 +218,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
           />
           <StatCard
             title="Weight"
-            value={
-              data.current_weight
-                ? `${data.current_weight} kg`
-                : "Not specified"
-            }
+            value={data.current_weight ? `${data.current_weight} kg` : "Not specified"}
             icon={<Weight size={18} />}
           />
         </div>
@@ -280,9 +233,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
                 Current Weight
               </span>
               <span className="text-lg font-medium">
-                {data.current_weight
-                  ? `${data.current_weight} kg`
-                  : "Not specified"}
+                {data.current_weight ? `${data.current_weight} kg` : "Not specified"}
               </span>
             </div>
             <div className="flex flex-col">
@@ -290,9 +241,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
                 Target Weight
               </span>
               <span className="text-lg font-medium">
-                {data.target_weight
-                  ? `${data.target_weight} kg`
-                  : "Not specified"}
+                {data.target_weight ? `${data.target_weight} kg` : "Not specified"}
               </span>
             </div>
             <div className="flex flex-col">
@@ -342,9 +291,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
                 Daily Calories
               </span>
               <span className="text-lg font-medium">
-                {data.daily_calories
-                  ? `${data.daily_calories} kcal`
-                  : "Not calculated"}
+                {data.daily_calories ? `${data.daily_calories} kcal` : "Not calculated"}
               </span>
             </div>
           </div>
@@ -359,12 +306,14 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
     const location = [data.city, data.state, data.country]
       .filter(Boolean)
       .join(", ");
-
+      
     return (
       <div className="flex items-start">
         <MapPin className="text-primary mr-3 mt-1" size={18} />
         <div className="flex-1">
-          <p className="text-base">{location || "Location not specified"}</p>
+          <p className="text-base">
+            {location || "Location not specified"}
+          </p>
         </div>
       </div>
     );
@@ -379,7 +328,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
     const primaryGoal = getValue<string>("primary_goal_display");
     const planType = getValue<string>("plan_type_display");
     const stressSleep = getValue<string>("stress_sleep_display");
-
+    
     return (
       <>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6">
@@ -388,31 +337,31 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
             value={activityLevel || "Not specified"}
             icon={<Activity className="text-primary" size={18} />}
           />
-
+          
           <FieldItem
             label="Diet Type"
             value={dietType || "Not specified"}
             icon={<Apple className="text-primary" size={18} />}
           />
-
+          
           <FieldItem
             label="Meal Timing"
             value={mealTiming || "Not specified"}
             icon={<Clock className="text-primary" size={18} />}
           />
-
+          
           <FieldItem
             label="Primary Goal"
             value={primaryGoal || "Not specified"}
             icon={<Target className="text-primary" size={18} />}
           />
-
+          
           <FieldItem
             label="Plan Type"
             value={planType || "Not specified"}
             icon={<BookOpen className="text-primary" size={18} />}
           />
-
+          
           <FieldItem
             label="Stress & Sleep"
             value={stressSleep || "Not specified"}
@@ -439,9 +388,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
           <TagList
             label="Recovery Needs"
             values={getValue<string[]>("recovery_needs") || []}
-            iconComponent={
-              <Activity className="text-blue-500 mr-2" size={16} />
-            }
+            iconComponent={<Activity className="text-blue-500 mr-2" size={16} />}
             colorClass="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
           />
 
@@ -459,50 +406,38 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
   // Default renderer for any category
   const renderDefaultCategory = (category: Category) => {
     const data = category.data;
-
+    
     return (
       <div className="space-y-4">
         {Object.entries(data).map(([key, value]) => {
           // Skip display fields, they'll be shown with their base fields
-          if (key.endsWith("_display")) return null;
-
+          if (key.endsWith('_display')) return null;
+          
           // For array values, render as tags
           if (Array.isArray(value)) {
             return (
               <TagList
                 key={key}
-                label={key
-                  .replace(/_/g, " ")
-                  .replace(/\b\w/g, (l) => l.toUpperCase())}
+                label={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 values={value}
-                iconComponent={
-                  CategoryIcons[key] || (
-                    <Smile className="text-primary mr-2" size={16} />
-                  )
-                }
+                iconComponent={CategoryIcons[key] || <Smile className="text-primary mr-2" size={16} />}
               />
             );
           }
-
+          
           // For simple values, render as field items
           return (
             <FieldItem
               key={key}
-              label={key
-                .replace(/_/g, " ")
-                .replace(/\b\w/g, (l) => l.toUpperCase())}
-              value={
-                value
-                  ? key.endsWith("_display")
-                    ? value
-                    : getDisplayValue(key, value, clientProfileMapping)
-                  : "Not specified"
+              label={key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              value={value ? 
+                (key.endsWith('_display') ? 
+                  value : 
+                  getDisplayValue(key, value, clientProfileMapping)
+                ) : 
+                "Not specified"
               }
-              icon={
-                CategoryIcons[key] || (
-                  <Smile className="text-primary" size={18} />
-                )
-              }
+              icon={CategoryIcons[key] || <Smile className="text-primary" size={18} />}
             />
           );
         })}
@@ -513,9 +448,9 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
   // Renderer for a specific category
   const renderCategoryContent = (categoryKey: string, category: Category) => {
     switch (categoryKey) {
-      case "basic_information":
+      case 'basic_information':
         return renderBasicInformation(category);
-      case "region":
+      case 'region':
         return renderRegion(category);
       default:
         return renderDefaultCategory(category);
@@ -536,10 +471,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
         </div>
         <div>
           <h2 className="text-lg font-medium">User ID: {profile.user_id}</h2>
-          <p className="text-muted-foreground">
-            Profile last updated:{" "}
-            {new Date(profile.updated_at).toLocaleDateString()}
-          </p>
+          <p className="text-muted-foreground">Profile last updated: {new Date(profile.updated_at).toLocaleDateString()}</p>
         </div>
       </motion.div>
 
@@ -557,8 +489,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            {profile.categories.basic_information &&
-              renderBasicInformation(profile.categories.basic_information)}
+            {profile.categories.basic_information && renderBasicInformation(profile.categories.basic_information)}
           </CardContent>
         </Card>
       </motion.div>
@@ -577,8 +508,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            {profile.categories.region &&
-              renderRegion(profile.categories.region)}
+            {profile.categories.region && renderRegion(profile.categories.region)}
           </CardContent>
         </Card>
       </motion.div>
@@ -606,31 +536,19 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
       {Object.entries(profile.categories).map(([categoryKey, category]) => {
         // Skip already rendered categories and empty ones
         if (
-          categoryKey === "basic_information" ||
-          categoryKey === "region" ||
-          !category.data ||
+          categoryKey === 'basic_information' || 
+          categoryKey === 'region' || 
+          !category.data || 
           Object.keys(category.data).length === 0
         ) {
           return null;
         }
-
+        
         // Skip categories whose data is only used in the Lifestyle section
-        if (
-          [
-            "activity",
-            "diet",
-            "meal_timing",
-            "plan",
-            "stress_and_sleep",
-            "health",
-            "allergies",
-            "recovery_needs",
-            "meal_preferences",
-          ].includes(categoryKey)
-        ) {
+        if (['activity', 'diet', 'meal_timing', 'plan', 'stress_and_sleep', 'health', 'allergies', 'recovery_needs', 'meal_preferences'].includes(categoryKey)) {
           return null;
         }
-
+        
         return (
           <motion.div
             key={categoryKey}
@@ -641,9 +559,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({
             <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 border-primary-100 bg-white">
               <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 pb-4">
                 <CardTitle className="text-xl md:text-2xl text-primary-900 font-playfair flex items-center">
-                  {CategoryIcons[categoryKey] || (
-                    <FileText className="mr-2" size={20} />
-                  )}
+                  {CategoryIcons[categoryKey] || <FileText className="mr-2" size={20} />}
                   <span className="ml-2">{category.name}</span>
                 </CardTitle>
               </CardHeader>
