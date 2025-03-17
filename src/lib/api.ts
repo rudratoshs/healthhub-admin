@@ -2,7 +2,7 @@
 import { toast } from "@/hooks/use-toast";
 import { ApiError } from "@/types/auth";
 
-const API_URL = "https://phpstack-1335001-5338259.cloudwaysapps.com/api";
+const API_URL = "http://localhost:8000/api";
 
 // Helper to handle API errors
 export const handleApiError = (error: any): never => {
