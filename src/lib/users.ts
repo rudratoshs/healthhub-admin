@@ -6,15 +6,15 @@ import { apiRequest } from "@/lib/api";
 // Get users with optional filters
 export const getUsers = async (params: UserListParams = {}): Promise<UserListResponse> => {
   const queryParams = new URLSearchParams();
-  
-  if (params.role) queryParams.append('role', params.role);
-  if (params.status) queryParams.append('status', params.status);
-  if (params.search) queryParams.append('search', params.search);
-  if (params.page) queryParams.append('page', params.page.toString());
-  
+
+  if (params.role && params.role !== "all") queryParams.append("role", params.role); // ✅ Omit "all"
+  if (params.status && params.status !== "all") queryParams.append("status", params.status); // ✅ Omit "all"
+  if (params.search) queryParams.append("search", params.search);
+  if (params.page) queryParams.append("page", params.page.toString());
+
   const queryString = queryParams.toString();
-  const endpoint = `/users${queryString ? `?${queryString}` : ''}`;
-  
+  const endpoint = `/users${queryString ? `?${queryString}` : ""}`;
+
   return apiRequest<UserListResponse>(endpoint);
 };
 
@@ -30,13 +30,13 @@ export const createUser = async (userData: CreateUserRequest): Promise<User> => 
       method: 'POST',
       body: JSON.stringify(userData),
     });
-    
+
     toast({
       title: "User created",
       description: `${userData.name} has been added successfully.`,
       variant: "default",
     });
-    
+
     return user;
   } catch (error) {
     console.error("Failed to create user:", error);
@@ -51,13 +51,13 @@ export const updateUser = async (id: number, userData: UpdateUserRequest): Promi
       method: 'PUT',
       body: JSON.stringify(userData),
     });
-    
+
     toast({
       title: "User updated",
       description: `User has been updated successfully.`,
       variant: "default",
     });
-    
+
     return user;
   } catch (error) {
     console.error("Failed to update user:", error);
@@ -71,7 +71,7 @@ export const deleteUser = async (id: number): Promise<void> => {
     await apiRequest(`/users/${id}`, {
       method: 'DELETE',
     });
-    
+
     toast({
       title: "User deleted",
       description: "User has been deleted successfully.",

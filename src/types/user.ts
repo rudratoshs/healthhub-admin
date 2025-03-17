@@ -31,8 +31,8 @@ export interface UpdateUserRequest {
 }
 
 export interface UserListParams {
-  role?: 'admin' | 'gym_admin' | 'trainer' | 'dietitian' | 'client';
-  status?: 'active' | 'inactive' | 'pending';
+  role?: 'admin' | 'gym_admin' | 'trainer' | 'dietitian' | 'client' | 'all';
+  status?: 'active' | 'inactive' | 'pending' | 'all';
   search?: string;
   page?: number;
 }

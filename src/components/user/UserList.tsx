@@ -1,23 +1,22 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,17 +42,22 @@ const UserList: React.FC = () => {
 
   const { data: roleOptions } = useQuery({
     queryKey: ["roles"],
-    queryFn: getRoles
+    queryFn: getRoles,
   });
 
-  const { data: users, isLoading, refetch } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["users", { role, status, search, page }],
-    queryFn: () => getUsers({ 
-      role: role as any, 
-      status: status as any, 
-      search,
-      page 
-    })
+    queryFn: () =>
+      getUsers({
+        role: role as any,
+        status: status as any,
+        search,
+        page,
+      }),
   });
 
   const handleSearch = (e: React.FormEvent) => {
@@ -72,6 +76,13 @@ const UserList: React.FC = () => {
     );
   }
 
+  const formatRoleName = (role: string) => {
+    return role
+      .split("_") // Split by underscores
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
+      .join(" "); // Join back with spaces
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -84,7 +95,10 @@ const UserList: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <form onSubmit={handleSearch} className="md:col-span-2 flex items-center gap-2">
+        <form
+          onSubmit={handleSearch}
+          className="md:col-span-2 flex items-center gap-2"
+        >
           <div className="relative flex-grow">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -95,7 +109,9 @@ const UserList: React.FC = () => {
               className="pl-9"
             />
           </div>
-          <Button type="submit" size="sm">Search</Button>
+          <Button type="submit" size="sm">
+            Search
+          </Button>
         </form>
 
         <div>
@@ -104,9 +120,11 @@ const UserList: React.FC = () => {
               <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All roles</SelectItem>
+              <SelectItem value="all">All Roles</SelectItem>
               {roleOptions?.map((role) => (
-                <SelectItem key={role} value={role}>{role}</SelectItem>
+                <SelectItem key={role} value={role}>
+                  {formatRoleName(role)}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -118,7 +136,7 @@ const UserList: React.FC = () => {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All statuses</SelectItem>
+              <SelectItem value="all">All statuses</SelectItem>{" "}
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
@@ -144,15 +162,26 @@ const UserList: React.FC = () => {
             {users?.data && users.data.length > 0 ? (
               users.data.map((user: User) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name || "N/A"}</TableCell>
+                  <TableCell className="font-medium">
+                    {user.name || "N/A"}
+                  </TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell className="capitalize">{Array.isArray(user.role) ? user.role.join(', ') : user.role}</TableCell>
+                  <TableCell className="capitalize">
+                    {Array.isArray(user.role)
+                      ? user.role.join(", ")
+                      : user.role}
+                  </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
-                      ${user.status === 'active' ? 'bg-green-50 text-green-700' : 
-                        user.status === 'inactive' ? 'bg-red-50 text-red-700' : 
-                        'bg-yellow-50 text-yellow-700'}`
-                    }>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
+                      ${
+                        user.status === "active"
+                          ? "bg-green-50 text-green-700"
+                          : user.status === "inactive"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-yellow-50 text-yellow-700"
+                      }`}
+                    >
                       {user.status}
                     </span>
                   </TableCell>
@@ -171,9 +200,9 @@ const UserList: React.FC = () => {
                           <span className="sr-only">Edit</span>
                         </Link>
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="text-destructive"
                         onClick={() => setUserToDelete(user)}
                       >
@@ -186,7 +215,10 @@ const UserList: React.FC = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No users found. Try changing your filters.
                 </TableCell>
               </TableRow>
@@ -199,29 +231,40 @@ const UserList: React.FC = () => {
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious 
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className={page <= 1 ? "pointer-events-none opacity-50" : ""}
               />
             </PaginationItem>
-            
-            {users.meta.links && users.meta.links.filter(link => 
-              !link.label.includes('Previous') && !link.label.includes('Next')
-            ).map((link, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink 
-                  isActive={link.active}
-                  onClick={() => setPage(parseInt(link.label))}
-                >
-                  {link.label}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            
+
+            {users.meta.links &&
+              users.meta.links
+                .filter(
+                  (link) =>
+                    !link.label.includes("Previous") &&
+                    !link.label.includes("Next")
+                )
+                .map((link, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      isActive={link.active}
+                      onClick={() => setPage(parseInt(link.label))}
+                    >
+                      {link.label}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
             <PaginationItem>
-              <PaginationNext 
-                onClick={() => setPage(p => Math.min(users.meta.last_page, p + 1))}
-                className={page >= users.meta.last_page ? "pointer-events-none opacity-50" : ""}
+              <PaginationNext
+                onClick={() =>
+                  setPage((p) => Math.min(users.meta.last_page, p + 1))
+                }
+                className={
+                  page >= users.meta.last_page
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
               />
             </PaginationItem>
           </PaginationContent>
