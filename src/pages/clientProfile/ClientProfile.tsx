@@ -32,7 +32,7 @@ const ClientProfile: React.FC = () => {
   if (error || !data) {
     return (
       <div className="container mx-auto p-6">
-        <Card className="border-red-200 shadow">
+        <Card className="border-red-200 shadow-lg">
           <CardHeader className="bg-red-50">
             <CardTitle className="text-red-700">Error Loading Profile</CardTitle>
           </CardHeader>

@@ -29,7 +29,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ profile }) =>
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-lg border-primary-100">
         <CardHeader className="bg-primary-50 pb-4">
           <CardTitle className="text-xl md:text-2xl text-primary-900">Basic Information</CardTitle>
         </CardHeader>
@@ -41,7 +41,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ profile }) =>
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground">Gender</h3>
-              <p className="mt-1 text-base">{getDisplayValue("gender", profile.gender, clientProfileMapping)}</p>
+              <p className="mt-1 text-base">{profile.gender === "male" ? "Male" : profile.gender === "female" ? "Female" : "Other"}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground">Height</h3>
@@ -55,23 +55,29 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ profile }) =>
               <h3 className="text-sm font-medium text-muted-foreground">Target Weight</h3>
               <p className="mt-1 text-base">{profile.target_weight} kg</p>
             </div>
+            
+            {/* Read-only calculated fields */}
             <div>
               <h3 className="text-sm font-medium text-muted-foreground">BMI</h3>
               <p className="mt-1 text-base">{profile.bmi.toFixed(1)}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Weight Goal</h3>
-              <p className="mt-1 text-base capitalize">{profile.weight_goal_type} {profile.weight_difference} kg</p>
+              <h3 className="text-sm font-medium text-muted-foreground">BMR</h3>
+              <p className="mt-1 text-base">{profile.bmr} kcal</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground">Daily Calories</h3>
               <p className="mt-1 text-base">{profile.daily_calories} kcal</p>
             </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Weight Goal</h3>
+              <p className="mt-1 text-base capitalize">{profile.weight_goal_type} {profile.weight_difference} kg</p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-lg border-primary-100">
         <CardHeader className="bg-primary-50 pb-4">
           <CardTitle className="text-xl md:text-2xl text-primary-900">Location</CardTitle>
         </CardHeader>
@@ -93,7 +99,7 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ profile }) =>
         </CardContent>
       </Card>
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-lg border-primary-100">
         <CardHeader className="bg-primary-50 pb-4">
           <CardTitle className="text-xl md:text-2xl text-primary-900">Lifestyle & Preferences</CardTitle>
         </CardHeader>
@@ -118,6 +124,10 @@ const ClientProfileDetail: React.FC<ClientProfileDetailProps> = ({ profile }) =>
             <div>
               <h3 className="text-sm font-medium text-muted-foreground">Plan Type</h3>
               <p className="mt-1 text-base">{profile.plan_type_display}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Stress & Sleep</h3>
+              <p className="mt-1 text-base">{profile.stress_sleep_display}</p>
             </div>
           </div>
 

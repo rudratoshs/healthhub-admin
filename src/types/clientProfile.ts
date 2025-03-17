@@ -34,11 +34,13 @@ export interface ClientProfile {
   additional_requests: string | null;
   measurement_preference: string | null;
   plan_type: string;
+  // Read-only calculated fields
   bmi: number;
   bmr: number;
   daily_calories: number;
   weight_goal_type: string;
   weight_difference: number;
+  // Display fields
   activity_level_display: string;
   diet_type_display: string;
   meal_timing_display: string;

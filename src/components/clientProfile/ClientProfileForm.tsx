@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -82,92 +82,100 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
     onSubmit(data as CreateClientProfileRequest);
   };
 
+  // Map activity level options from the mapping
   const activityOptions = [
-    { value: "sedentary", label: clientProfileMapping.sedentary },
-    { value: "light_active", label: clientProfileMapping.light_active },
-    { value: "mod_active", label: clientProfileMapping.mod_active },
-    { value: "very_active", label: clientProfileMapping.very_active },
-    { value: "extreme_active", label: clientProfileMapping.extreme_active },
+    { value: "sedentary", label: clientProfileMapping.activity?.sedentary || "Sedentary" },
+    { value: "light_active", label: clientProfileMapping.activity?.light_active || "Lightly active" },
+    { value: "mod_active", label: clientProfileMapping.activity?.mod_active || "Moderately active" },
+    { value: "very_active", label: clientProfileMapping.activity?.very_active || "Very active" },
+    { value: "extreme_active", label: clientProfileMapping.activity?.extreme_active || "Extremely active" },
   ];
 
+  // Map diet type options from the mapping
   const dietTypeOptions = [
-    { value: "omnivore", label: clientProfileMapping.omnivore },
-    { value: "vegetarian", label: clientProfileMapping.vegetarian },
-    { value: "eggetarian", label: clientProfileMapping.eggetarian },
-    { value: "vegan", label: clientProfileMapping.vegan },
-    { value: "pescatarian", label: clientProfileMapping.pescatarian },
-    { value: "keto", label: clientProfileMapping.keto },
-    { value: "mediterranean", label: clientProfileMapping.mediterranean },
-    { value: "fodmap", label: clientProfileMapping.fodmap },
-    { value: "other_diet", label: clientProfileMapping.other_diet },
+    { value: "omnivore", label: clientProfileMapping.diet?.omnivore || "Omnivore" },
+    { value: "vegetarian", label: clientProfileMapping.diet?.vegetarian || "Vegetarian" },
+    { value: "eggetarian", label: clientProfileMapping.diet?.eggetarian || "Vegetarian + eggs" },
+    { value: "vegan", label: clientProfileMapping.diet?.vegan || "Vegan" },
+    { value: "pescatarian", label: clientProfileMapping.diet?.pescatarian || "Pescatarian" },
+    { value: "keto", label: clientProfileMapping.diet?.keto || "Keto" },
+    { value: "mediterranean", label: clientProfileMapping.diet?.mediterranean || "Mediterranean" },
+    { value: "fodmap", label: clientProfileMapping.diet?.fodmap || "FODMAP" },
+    { value: "other_diet", label: clientProfileMapping.diet?.other_diet || "Other" },
   ];
 
+  // Map health condition options from the mapping
   const healthConditionOptions = [
-    { value: "diabetes", label: clientProfileMapping.diabetes },
-    { value: "hypertension", label: clientProfileMapping.hypertension },
-    { value: "heart", label: clientProfileMapping.heart },
-    { value: "kidney", label: clientProfileMapping.kidney },
-    { value: "liver", label: clientProfileMapping.liver },
-    { value: "digestive", label: clientProfileMapping.digestive },
-    { value: "thyroid", label: clientProfileMapping.thyroid },
-    { value: "none_health", label: clientProfileMapping.none_health },
+    { value: "diabetes", label: clientProfileMapping.health?.diabetes || "Diabetes" },
+    { value: "hypertension", label: clientProfileMapping.health?.hypertension || "Hypertension" },
+    { value: "heart", label: clientProfileMapping.health?.heart || "Heart disease" },
+    { value: "kidney", label: clientProfileMapping.health?.kidney || "Kidney issues" },
+    { value: "liver", label: clientProfileMapping.health?.liver || "Liver problems" },
+    { value: "digestive", label: clientProfileMapping.health?.digestive || "Digestive disorders" },
+    { value: "thyroid", label: clientProfileMapping.health?.thyroid || "Thyroid issues" },
+    { value: "none_health", label: clientProfileMapping.health?.none_health || "None of these" },
   ];
 
+  // Map allergy options from the mapping
   const allergyOptions = [
-    { value: "dairy", label: clientProfileMapping.dairy },
-    { value: "gluten", label: clientProfileMapping.gluten },
-    { value: "nuts", label: clientProfileMapping.nuts },
-    { value: "seafood", label: clientProfileMapping.seafood },
-    { value: "eggs", label: clientProfileMapping.eggs },
-    { value: "soy", label: clientProfileMapping.soy },
-    { value: "tree_nuts", label: clientProfileMapping.tree_nuts },
-    { value: "peanuts", label: clientProfileMapping.peanuts },
-    { value: "corn", label: clientProfileMapping.corn },
-    { value: "fruits", label: clientProfileMapping.fruits },
-    { value: "none_allergy", label: clientProfileMapping.none_allergy },
+    { value: "dairy", label: clientProfileMapping.allergies?.dairy || "Dairy" },
+    { value: "gluten", label: clientProfileMapping.allergies?.gluten || "Gluten" },
+    { value: "nuts", label: clientProfileMapping.allergies?.nuts || "Nuts" },
+    { value: "seafood", label: clientProfileMapping.allergies?.seafood || "Seafood" },
+    { value: "eggs", label: clientProfileMapping.allergies?.eggs || "Eggs" },
+    { value: "soy", label: clientProfileMapping.allergies?.soy || "Soy" },
+    { value: "tree_nuts", label: clientProfileMapping.allergies?.tree_nuts || "Tree nuts" },
+    { value: "peanuts", label: clientProfileMapping.allergies?.peanuts || "Peanuts" },
+    { value: "corn", label: clientProfileMapping.allergies?.corn || "Corn" },
+    { value: "fruits", label: clientProfileMapping.allergies?.fruits || "Fruits" },
+    { value: "none_allergy", label: clientProfileMapping.allergies?.none_allergy || "None" },
   ];
 
+  // Map recovery needs options from the mapping
   const recoveryNeedsOptions = [
-    { value: "weight_loss", label: clientProfileMapping.weight_loss_need },
-    { value: "muscle_gain", label: clientProfileMapping.muscle_gain_need },
-    { value: "energy", label: clientProfileMapping.energy_improvement },
-    { value: "blood_sugar", label: clientProfileMapping.blood_sugar },
-    { value: "cholesterol", label: clientProfileMapping.cholesterol },
-    { value: "inflammation", label: clientProfileMapping.inflammation },
-    { value: "immune_support", label: clientProfileMapping.immune_support },
-    { value: "sleep_improvement", label: clientProfileMapping.sleep_improvement },
-    { value: "none_specifically", label: clientProfileMapping.none_specifically },
+    { value: "weight_loss", label: clientProfileMapping.recovery_needs?.weight_loss_need || "Weight loss" },
+    { value: "muscle_gain", label: clientProfileMapping.recovery_needs?.muscle_gain_need || "Muscle gain" },
+    { value: "energy", label: clientProfileMapping.recovery_needs?.energy_improvement || "Energy improvement" },
+    { value: "blood_sugar", label: clientProfileMapping.recovery_needs?.blood_sugar || "Blood sugar management" },
+    { value: "cholesterol", label: clientProfileMapping.recovery_needs?.cholesterol || "Cholesterol management" },
+    { value: "inflammation", label: clientProfileMapping.recovery_needs?.inflammation || "Inflammation reduction" },
+    { value: "immune_support", label: clientProfileMapping.recovery_needs?.immune_support || "Immune support" },
+    { value: "sleep_improvement", label: clientProfileMapping.recovery_needs?.sleep_improvement || "Sleep improvement" },
+    { value: "none_specifically", label: clientProfileMapping.recovery_needs?.none_specifically || "None specifically" },
   ];
 
+  // Map primary goal options from the mapping
   const primaryGoalOptions = [
-    { value: "weight_loss", label: clientProfileMapping.weight_loss },
-    { value: "muscle_gain", label: clientProfileMapping.muscle_gain },
-    { value: "maintain", label: clientProfileMapping.maintain },
-    { value: "energy", label: clientProfileMapping.energy },
-    { value: "health", label: clientProfileMapping.health },
-    { value: "digestion", label: clientProfileMapping.digestion },
-    { value: "overall_health", label: clientProfileMapping.overall_health },
-    { value: "recovery", label: clientProfileMapping.recovery },
-    { value: "athletic", label: clientProfileMapping.athletic },
+    { value: "weight_loss", label: clientProfileMapping.goals?.weight_loss || "Weight loss" },
+    { value: "muscle_gain", label: clientProfileMapping.goals?.muscle_gain || "Muscle gain" },
+    { value: "maintain", label: clientProfileMapping.goals?.maintain || "Maintain weight" },
+    { value: "energy", label: clientProfileMapping.goals?.energy || "Better energy" },
+    { value: "health", label: clientProfileMapping.goals?.health || "Improve health" },
+    { value: "digestion", label: clientProfileMapping.goals?.digestion || "Improved digestion" },
+    { value: "overall_health", label: clientProfileMapping.goals?.overall_health || "Improved overall health" },
+    { value: "recovery", label: clientProfileMapping.goals?.recovery || "Recovery from condition" },
+    { value: "athletic", label: clientProfileMapping.goals?.athletic || "Athletic performance" },
   ];
 
+  // Map plan type options from the mapping
   const planTypeOptions = [
-    { value: "complete", label: clientProfileMapping.complete_plan },
-    { value: "basic", label: clientProfileMapping.basic_plan },
-    { value: "focus", label: clientProfileMapping.focus_plan },
+    { value: "complete", label: clientProfileMapping.plan?.complete_plan || "Complete Plan" },
+    { value: "basic", label: clientProfileMapping.plan?.basic_plan || "Basic Plan" },
+    { value: "focus", label: clientProfileMapping.plan?.focus_plan || "Food Focus" },
   ];
 
+  // Map meal preferences options from the mapping
   const mealPreferencesOptions = [
-    { value: "high_protein", label: clientProfileMapping.high_protein },
-    { value: "low_carb", label: clientProfileMapping.low_carb },
-    { value: "low_fat", label: clientProfileMapping.low_fat },
-    { value: "gluten_free", label: clientProfileMapping.gluten_free },
-    { value: "dairy_free", label: clientProfileMapping.dairy_free },
-    { value: "sugar_free", label: clientProfileMapping.sugar_free },
-    { value: "low_sodium", label: clientProfileMapping.low_sodium },
-    { value: "whole_foods", label: clientProfileMapping.whole_foods },
-    { value: "plant_based", label: clientProfileMapping.plant_based },
-    { value: "balanced_macros", label: clientProfileMapping.balanced_macros },
+    { value: "high_protein", label: clientProfileMapping.meal_preferences?.high_protein || "High protein" },
+    { value: "low_carb", label: clientProfileMapping.meal_preferences?.low_carb || "Low carb" },
+    { value: "low_fat", label: clientProfileMapping.meal_preferences?.low_fat || "Low fat" },
+    { value: "gluten_free", label: clientProfileMapping.meal_preferences?.gluten_free || "Gluten-free" },
+    { value: "dairy_free", label: clientProfileMapping.meal_preferences?.dairy_free || "Dairy-free" },
+    { value: "sugar_free", label: clientProfileMapping.meal_preferences?.sugar_free || "Sugar-free" },
+    { value: "low_sodium", label: clientProfileMapping.meal_preferences?.low_sodium || "Low sodium" },
+    { value: "whole_foods", label: clientProfileMapping.meal_preferences?.whole_foods || "Whole foods focus" },
+    { value: "plant_based", label: clientProfileMapping.meal_preferences?.plant_based || "Plant-based" },
+    { value: "balanced_macros", label: clientProfileMapping.meal_preferences?.balanced_macros || "Balanced macros" },
   ];
 
   return (
@@ -179,7 +187,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="age"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.age_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.basic_information?.age_prompt || "Please share your age:"}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -198,7 +206,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.gender_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.basic_information?.gender_prompt || "Please select your gender:"}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -209,9 +217,9 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="male">{clientProfileMapping.male}</SelectItem>
-                    <SelectItem value="female">{clientProfileMapping.female}</SelectItem>
-                    <SelectItem value="other">{clientProfileMapping.other}</SelectItem>
+                    <SelectItem value="male">{clientProfileMapping.basic_information?.male || "Male"}</SelectItem>
+                    <SelectItem value="female">{clientProfileMapping.basic_information?.female || "Female"}</SelectItem>
+                    <SelectItem value="other">{clientProfileMapping.basic_information?.other || "Other"}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -224,7 +232,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="height"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.height_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.basic_information?.height_prompt || "Please share your height (in cm):"}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -244,7 +252,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="current_weight"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.weight_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.basic_information?.weight_prompt || "Please share your current weight (in kg):"}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -265,7 +273,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="target_weight"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.target_weight_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.basic_information?.target_weight_prompt || "Please share your target weight (in kg):"}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -286,7 +294,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.country_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.region?.country_prompt || "Which country do you live in?"}</FormLabel>
                 <FormControl>
                   <Input placeholder="Country" {...field} />
                 </FormControl>
@@ -300,7 +308,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.state_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.region?.state_prompt || "Which state or region do you live in?"}</FormLabel>
                 <FormControl>
                   <Input placeholder="State/Province" {...field} />
                 </FormControl>
@@ -314,7 +322,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.city_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.region?.city_prompt || "Which city do you live in?"}</FormLabel>
                 <FormControl>
                   <Input placeholder="City" {...field} />
                 </FormControl>
@@ -328,7 +336,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="activity_level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.activity_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.activity?.activity_prompt || "Which describes your activity level?"}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -356,7 +364,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="diet_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.diet_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.diet?.diet_prompt || "What diet do you follow?"}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -384,7 +392,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="primary_goal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.goal_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.goals?.goal_prompt || "Your primary health goal?"}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -412,7 +420,7 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
             name="plan_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{clientProfileMapping.plan_prompt}</FormLabel>
+                <FormLabel>{clientProfileMapping.plan?.plan_prompt || "Choose your plan type:"}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -437,15 +445,15 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
         </div>
 
         <div className="space-y-4">
-          <div className="text-lg font-medium">{clientProfileMapping.health_header}</div>
+          <div className="text-lg font-medium">{clientProfileMapping.health?.health_header || "Health Conditions"}</div>
           <FormField
             control={form.control}
             name="health_conditions"
             render={() => (
               <FormItem>
                 <div className="mb-4">
-                  <FormLabel>{clientProfileMapping.health_prompt}</FormLabel>
-                  <FormDescription>{clientProfileMapping.health_body}</FormDescription>
+                  <FormLabel>{clientProfileMapping.health?.health_prompt || "Any health conditions?"}</FormLabel>
+                  <FormDescription>{clientProfileMapping.health?.health_body || "Select all that apply"}</FormDescription>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {healthConditionOptions.map((item) => (
@@ -489,15 +497,15 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
         </div>
 
         <div className="space-y-4">
-          <div className="text-lg font-medium">{clientProfileMapping.allergies_header}</div>
+          <div className="text-lg font-medium">{clientProfileMapping.allergies?.allergies_header || "Food Allergies"}</div>
           <FormField
             control={form.control}
             name="allergies"
             render={() => (
               <FormItem>
                 <div className="mb-4">
-                  <FormLabel>{clientProfileMapping.allergies_prompt}</FormLabel>
-                  <FormDescription>{clientProfileMapping.allergies_body}</FormDescription>
+                  <FormLabel>{clientProfileMapping.allergies?.allergies_prompt || "Any food allergies?"}</FormLabel>
+                  <FormDescription>{clientProfileMapping.allergies?.allergies_body || "Select all that apply"}</FormDescription>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {allergyOptions.map((item) => (
@@ -541,15 +549,15 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
         </div>
 
         <div className="space-y-4">
-          <div className="text-lg font-medium">{clientProfileMapping.recovery_needs_header}</div>
+          <div className="text-lg font-medium">{clientProfileMapping.recovery_needs?.recovery_needs_header || "Health Goals"}</div>
           <FormField
             control={form.control}
             name="recovery_needs"
             render={() => (
               <FormItem>
                 <div className="mb-4">
-                  <FormLabel>{clientProfileMapping.recovery_needs_prompt}</FormLabel>
-                  <FormDescription>{clientProfileMapping.recovery_needs_body}</FormDescription>
+                  <FormLabel>{clientProfileMapping.recovery_needs?.recovery_needs_prompt || "Are you looking to address any specific health concerns?"}</FormLabel>
+                  <FormDescription>{clientProfileMapping.recovery_needs?.recovery_needs_body || "Select all that apply to you"}</FormDescription>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {recoveryNeedsOptions.map((item) => (
@@ -593,15 +601,15 @@ const ClientProfileForm: React.FC<ClientProfileFormProps> = ({
         </div>
 
         <div className="space-y-4">
-          <div className="text-lg font-medium">{clientProfileMapping.meal_preferences_header}</div>
+          <div className="text-lg font-medium">{clientProfileMapping.meal_preferences?.meal_preferences_header || "Meal Preferences"}</div>
           <FormField
             control={form.control}
             name="meal_preferences"
             render={() => (
               <FormItem>
                 <div className="mb-4">
-                  <FormLabel>{clientProfileMapping.meal_preferences_prompt}</FormLabel>
-                  <FormDescription>{clientProfileMapping.meal_preferences_body}</FormDescription>
+                  <FormLabel>{clientProfileMapping.meal_preferences?.meal_preferences_prompt || "Select your meal preferences"}</FormLabel>
+                  <FormDescription>{clientProfileMapping.meal_preferences?.meal_preferences_body || "Choose all that apply"}</FormDescription>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {mealPreferencesOptions.map((item) => (
