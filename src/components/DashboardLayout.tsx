@@ -3,14 +3,18 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
+import { Loader } from "@/components/ui/loader";
 
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="animate-pulse text-primary">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-primary-50/30">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader size="lg" variant="primary" />
+          <p className="text-primary-600 font-medium animate-pulse">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
