@@ -15,6 +15,13 @@ import CreateUser from "@/pages/user/CreateUser";
 import EditUser from "@/pages/user/EditUser";
 import UserDetail from "@/pages/user/UserDetail";
 
+// Gym pages
+import Gyms from "@/pages/gym/Gyms";
+import CreateGym from "@/pages/gym/CreateGym";
+import EditGym from "@/pages/gym/EditGym";
+import GymDetail from "@/pages/gym/GymDetail";
+import GymUsers from "@/pages/gym/GymUsers";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -43,6 +50,13 @@ const App = () => (
               <Route path="users/create" element={<CreateUser />} />
               <Route path="users/:id" element={<UserDetail />} />
               <Route path="users/:id/edit" element={<EditUser />} />
+              
+              {/* Gym Management Routes */}
+              <Route path="gyms" element={<Gyms />} />
+              <Route path="gyms/create" element={<CreateGym />} />
+              <Route path="gyms/:id" element={<GymDetail />} />
+              <Route path="gyms/:id/edit" element={<EditGym />} />
+              <Route path="gyms/:id/users" element={<GymUsers />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

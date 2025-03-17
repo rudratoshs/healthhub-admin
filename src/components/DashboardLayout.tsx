@@ -24,10 +24,12 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   }
 
   return (
-    <div className="dashboard-layout">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-background to-primary-50/20">
       <Navbar />
-      <main className="dashboard-main page-transition">
-        {children || <Outlet />}
+      <main className="flex-1 p-4 md:p-6 transition-all duration-300 ease-in-out">
+        <div className="mx-auto max-w-7xl">
+          {children || <Outlet />}
+        </div>
       </main>
     </div>
   );
