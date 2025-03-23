@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,20 +11,58 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { Menu, X, ChevronDown, UserCog } from "lucide-react";
+import {
+  Menu,
+  X,
+  UserCog,
+  Bell,
+  PlusCircle,
+  LayoutDashboard,
+  Users,
+  ClipboardList,
+  UserCircle,
+  BarChart3,
+  LogOut,
+  Settings,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
   const navItems = [
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "Users", path: "/users" },
-    { label: "Meal Plans", path: "/meal-plans" },
-    { label: "Clients", path: "/clients" },
-    { label: "Analytics", path: "/analytics" },
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: <LayoutDashboard size={16} />,
+    },
+    { label: "Users", path: "/users", icon: <Users size={16} /> },
+    {
+      label: "Meal Plans",
+      path: "/meal-plans",
+      icon: <ClipboardList size={16} />,
+    },
+    { label: "Clients", path: "/clients", icon: <UserCircle size={16} /> },
+    { label: "Analytics", path: "/analytics", icon: <BarChart3 size={16} /> },
   ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -42,70 +79,138 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="glass sticky top-0 z-50 border-b border-border/40">
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-300",
+        scrolled
+          ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-border/40"
+          : "bg-white border-b border-border/40"
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
           <Link to="/dashboard" className="flex items-center">
-            <span className="text-xl font-bold text-primary">NutriAdmin</span>
+            <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-primary">
+              <span className="text-lg font-bold text-primary-foreground">
+                N
+              </span>
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              NutriAdmin
+            </span>
           </Link>
-          
-          <nav className="ml-10 hidden space-x-8 md:flex">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors ${
-                  location.pathname === item.path
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-gray-500 hover:text-primary hover:border-b-2 hover:border-primary/40"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+
+          <nav className="ml-10 hidden space-x-1 md:flex">
+            {navItems.map((item) => {
+              const isActive =
+                location.pathname === item.path ||
+                location.pathname.startsWith(`${item.path}/`);
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "relative flex items-center px-3 py-2 text-sm font-medium transition-all rounded-md",
+                    isActive
+                      ? "text-primary active-underline"
+                      : "text-foreground/70 hover:text-primary hover-underline"
+                  )}
+                >
+                  <span className="mr-2">{item.icon}</span>
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
-        
+
         <div className="flex items-center space-x-4">
-          <Button variant="outline" className="hidden sm:flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative rounded-full hidden sm:flex text-muted-foreground hover:text-foreground"
+          >
+            <Bell size={20} />
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive"></span>
+          </Button>
+
+          <Button
+            variant="default"
+            className="hidden sm:flex btn btn-primary hover-lift"
+            size="sm"
+          >
+            <PlusCircle size={16} className="mr-1.5" />
             New Meal Plan
           </Button>
-          
-          {user &&
+
+          {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name || "NA"}`} alt={user.name || "User"} />
-                    <AvatarFallback>{getInitials(user.name || "NA")}</AvatarFallback>
+                <Button
+                  variant="ghost"
+                  className="h-9 w-9 rounded-full p-0 hover-lift"
+                  aria-label="User menu"
+                >
+                  <Avatar className="h-8 w-8 ring-2 ring-primary/20">
+                    <AvatarImage
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${
+                        user.name || "NA"
+                      }&backgroundColor=38CB89`}
+                      alt={user.name || "User"}
+                    />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {getInitials(user.name || "NA")}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56 mt-1" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.name || "Anonymous"}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {user.name || "Anonymous"}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/profile">Profile</Link>
+                  <Link
+                    to="/profile"
+                    className="flex items-center cursor-pointer"
+                  >
+                    <UserCog className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/settings">Settings</Link>
+                  <Link
+                    to="/settings"
+                    className="flex items-center cursor-pointer"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => logout()}>
-                  Log out
+                <DropdownMenuItem
+                  onClick={() => logout()}
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          }
-          
+          )}
+
           <button
-            className="inline-flex items-center justify-center p-2 text-gray-500 md:hidden"
+            className="inline-flex items-center justify-center p-2 text-muted-foreground hover:text-foreground md:hidden"
             onClick={toggleMenu}
+            aria-label="Toggle menu"
           >
             <span className="sr-only">Open main menu</span>
             {isMenuOpen ? (
@@ -117,30 +222,44 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="space-y-1 pb-3 pt-2">
-            {navItems.map((item) => (
+      {/* Mobile menu - animated slide down */}
+      <div
+        className={cn(
+          "md:hidden overflow-hidden transition-all duration-300 ease-in-out",
+          isMenuOpen ? "max-h-80" : "max-h-0"
+        )}
+      >
+        <div className="border-t border-border/40 bg-card px-2 py-3 shadow-inner">
+          {navItems.map((item) => {
+            const isActive =
+              location.pathname === item.path ||
+              location.pathname.startsWith(`${item.path}/`);
+
+            return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`block py-2 pl-3 pr-4 text-base font-medium ${
-                  location.pathname === item.path
-                    ? "border-l-4 border-primary text-primary"
-                    : "border-l-4 border-transparent text-gray-500 hover:border-primary/40 hover:text-primary"
-                }`}
+                className={cn(
+                  "flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-colors my-1",
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground/70 hover:bg-primary/5 hover:text-primary"
+                )}
                 onClick={() => setIsMenuOpen(false)}
               >
+                <span className="mr-3">{item.icon}</span>
                 {item.label}
               </Link>
-            ))}
-            <div className="px-3 py-2">
-              <Button className="w-full">New Meal Plan</Button>
-            </div>
+            );
+          })}
+          <div className="mt-3 px-3">
+            <Button className="w-full btn btn-primary">
+              <PlusCircle size={16} className="mr-1.5" />
+              New Meal Plan
+            </Button>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 };

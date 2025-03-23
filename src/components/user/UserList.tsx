@@ -167,20 +167,22 @@ const UserList: React.FC = () => {
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell className="capitalize">
-                    {Array.isArray(user.role)
-                      ? user.role.join(", ")
-                      : user.role}
+                    <span className="px-3 py-1 text-xs font-medium rounded-lg bg-primary/10 text-primary shadow-sm">
+                      {user.roles && user.roles.length > 0
+                        ? user.roles.map((r) => formatRoleName(r)).join(", ")
+                        : "No role assigned"}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium 
-                      ${
-                        user.status === "active"
-                          ? "bg-green-50 text-green-700"
-                          : user.status === "inactive"
-                          ? "bg-red-50 text-red-700"
-                          : "bg-yellow-50 text-yellow-700"
-                      }`}
+                      className={`inline-flex items-center rounded-md px-3 py-1 text-xs font-medium shadow-sm 
+                ${
+                  user.status === "active"
+                    ? "bg-green-100 text-green-700"
+                    : user.status === "inactive"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }`}
                     >
                       {user.status}
                     </span>
@@ -188,13 +190,23 @@ const UserList: React.FC = () => {
                   <TableCell>{formatDate(user.created_at)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="transition-transform transform hover:scale-110"
+                        asChild
+                      >
                         <Link to={`/users/${user.id}`}>
                           <Eye className="h-4 w-4" />
                           <span className="sr-only">View</span>
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="icon" asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="transition-transform transform hover:scale-110"
+                        asChild
+                      >
                         <Link to={`/users/${user.id}/edit`}>
                           <Edit className="h-4 w-4" />
                           <span className="sr-only">Edit</span>
@@ -203,7 +215,7 @@ const UserList: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-destructive"
+                        className="text-destructive transition-transform transform hover:scale-110"
                         onClick={() => setUserToDelete(user)}
                       >
                         <Trash className="h-4 w-4" />
