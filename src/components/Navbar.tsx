@@ -24,6 +24,7 @@ import {
   BarChart3,
   LogOut,
   Settings,
+  UtensilsCrossed,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,8 +42,8 @@ const Navbar: React.FC = () => {
     },
     { label: "Users", path: "/users", icon: <Users size={16} /> },
     {
-      label: "Meal Plans",
-      path: "/meal-plans",
+      label: "Diet Plans",
+      path: "/diet-plans",
       icon: <ClipboardList size={16} />,
     },
     { label: "Clients", path: "/clients", icon: <UserCircle size={16} /> },
@@ -139,9 +140,12 @@ const Navbar: React.FC = () => {
             variant="default"
             className="hidden sm:flex btn btn-primary hover-lift"
             size="sm"
+            onClick={() => location.pathname.startsWith('/diet-plans') ? 
+              window.location.assign('/diet-plans/create') : 
+              window.location.assign('/diet-plans')}
           >
             <PlusCircle size={16} className="mr-1.5" />
-            New Meal Plan
+            New Diet Plan
           </Button>
 
           {user && (
@@ -222,7 +226,6 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile menu - animated slide down */}
       <div
         className={cn(
           "md:hidden overflow-hidden transition-all duration-300 ease-in-out",
@@ -255,7 +258,7 @@ const Navbar: React.FC = () => {
           <div className="mt-3 px-3">
             <Button className="w-full btn btn-primary">
               <PlusCircle size={16} className="mr-1.5" />
-              New Meal Plan
+              New Diet Plan
             </Button>
           </div>
         </div>

@@ -33,6 +33,10 @@ import CreateDietPlan from "@/pages/dietPlan/CreateDietPlan";
 import EditDietPlan from "@/pages/dietPlan/EditDietPlan";
 import DietPlanDetail from "@/pages/dietPlan/DietPlanDetail";
 
+// Meal Plan pages
+import MealPlanDetail from "@/pages/mealPlan/MealPlanDetail";
+import CreateMealPlan from "@/pages/mealPlan/CreateMealPlan";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -79,6 +83,10 @@ const App = () => (
               <Route path="diet-plans/create" element={<CreateDietPlan />} />
               <Route path="diet-plans/:id" element={<DietPlanDetail />} />
               <Route path="diet-plans/:id/edit" element={<EditDietPlan />} />
+              
+              {/* Meal Plan Routes */}
+              <Route path="diet-plans/:dietPlanId/meal-plans/:id" element={<MealPlanDetail />} />
+              <Route path="diet-plans/:dietPlanId/meal-plans/create" element={<CreateMealPlan />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
