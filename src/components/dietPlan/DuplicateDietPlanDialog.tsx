@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { DuplicateDietPlanRequest } from '@/types/dietPlan';
+import { format } from 'date-fns';
 
 const duplicateFormSchema = z.object({
   new_title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
@@ -45,12 +46,12 @@ const DuplicateDietPlanDialog: React.FC<DuplicateDietPlanDialogProps> = ({
   });
 
   const handleSubmit = (data: z.infer<typeof duplicateFormSchema>) => {
-    // Ensure all required fields are present for DuplicateDietPlanRequest
+    // Convert dates to strings in the required format
     const duplicateData: DuplicateDietPlanRequest = {
       new_title: data.new_title,
       client_id: data.client_id,
-      start_date: data.start_date,
-      end_date: data.end_date,
+      start_date: data.start_date ? format(data.start_date, 'yyyy-MM-dd') : '',
+      end_date: data.end_date ? format(data.end_date, 'yyyy-MM-dd') : '',
     };
     onConfirm(duplicateData);
   };

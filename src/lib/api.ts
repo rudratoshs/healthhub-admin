@@ -58,3 +58,17 @@ export const apiRequest = async <T>(
     return handleApiError(error as ApiError);
   }
 };
+
+// Export API methods
+export const api = {
+  get: <T>(endpoint: string) => apiRequest<T>(endpoint, { method: 'GET' }),
+  post: <T>(endpoint: string, data: any) => apiRequest<T>(endpoint, { 
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  put: <T>(endpoint: string, data: any) => apiRequest<T>(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+  delete: <T>(endpoint: string) => apiRequest<T>(endpoint, { method: 'DELETE' }),
+};

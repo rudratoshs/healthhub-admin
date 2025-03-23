@@ -20,6 +20,8 @@ const formSchema = z.object({
   }),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 const CreateMealPlan: React.FC = () => {
   const { dietPlanId } = useParams<{ dietPlanId: string }>();
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const CreateMealPlan: React.FC = () => {
   
   const dietPlanIdInt = dietPlanId ? parseInt(dietPlanId) : 0;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       day_of_week: undefined,
@@ -54,7 +56,7 @@ const CreateMealPlan: React.FC = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: FormValues) => {
     mutate(values);
   };
 

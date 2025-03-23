@@ -87,7 +87,8 @@ const MealPlanDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <MealPlanDetail mealPlan={mealPlan} />
+      {/* Pass the correct props to MealPlanDetail component */}
+      <MealPlanDetail mealPlanId={mealPlanId} dietPlanId={dietPlanIdInt} />
     </div>
   );
 };
