@@ -27,6 +27,12 @@ import ClientProfile from "@/pages/clientProfile/ClientProfile";
 import CreateClientProfile from "@/pages/clientProfile/CreateClientProfile";
 import EditClientProfile from "@/pages/clientProfile/EditClientProfile";
 
+// Diet Plan pages
+import DietPlans from "@/pages/dietPlan/DietPlans";
+import CreateDietPlan from "@/pages/dietPlan/CreateDietPlan";
+import EditDietPlan from "@/pages/dietPlan/EditDietPlan";
+import DietPlanDetail from "@/pages/dietPlan/DietPlanDetail";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -67,6 +73,12 @@ const App = () => (
               <Route path="gyms/:id" element={<GymDetail />} />
               <Route path="gyms/:id/edit" element={<EditGym />} />
               <Route path="gyms/:id/users" element={<GymUsers />} />
+              
+              {/* Diet Plan Routes */}
+              <Route path="diet-plans" element={<DietPlans />} />
+              <Route path="diet-plans/create" element={<CreateDietPlan />} />
+              <Route path="diet-plans/:id" element={<DietPlanDetail />} />
+              <Route path="diet-plans/:id/edit" element={<EditDietPlan />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
