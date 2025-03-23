@@ -8,7 +8,9 @@ import {
   UpdateDietPlanRequest,
   DuplicateDietPlanRequest,
   DietPlanFilters,
-  MealPlanListResponse
+  MealPlanListResponse,
+  MealPlanResponse,
+  CreateMealPlanRequest
 } from '@/types/dietPlan';
 
 // Get all diet plans with optional filters
@@ -55,15 +57,35 @@ export const deleteDietPlan = async (id: number): Promise<void> => {
   });
 };
 
-// Get meal plans for a diet plan
-export const getDietPlanMealPlans = async (dietPlanId: number): Promise<MealPlanListResponse> => {
-  return apiRequest<MealPlanListResponse>(`/diet-plans/${dietPlanId}/meal-plans`);
-};
-
 // Duplicate a diet plan
 export const duplicateDietPlan = async (id: number, data: DuplicateDietPlanRequest): Promise<DietPlanResponse> => {
   return apiRequest<DietPlanResponse>(`/diet-plans/${id}/duplicate`, {
     method: 'POST',
     body: JSON.stringify(data),
+  });
+};
+
+// Get meal plans for a diet plan
+export const getDietPlanMealPlans = async (dietPlanId: number): Promise<MealPlanListResponse> => {
+  return apiRequest<MealPlanListResponse>(`/diet-plans/${dietPlanId}/meal-plans`);
+};
+
+// Get a specific meal plan by ID
+export const getMealPlan = async (dietPlanId: number, mealPlanId: number): Promise<MealPlanResponse> => {
+  return apiRequest<MealPlanResponse>(`/diet-plans/${dietPlanId}/meal-plans/${mealPlanId}`);
+};
+
+// Create a new meal plan
+export const createMealPlan = async (dietPlanId: number, data: CreateMealPlanRequest): Promise<MealPlanResponse> => {
+  return apiRequest<MealPlanResponse>(`/diet-plans/${dietPlanId}/meal-plans`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+};
+
+// Delete a meal plan
+export const deleteMealPlan = async (dietPlanId: number, mealPlanId: number): Promise<void> => {
+  return apiRequest<void>(`/diet-plans/${dietPlanId}/meal-plans/${mealPlanId}`, {
+    method: 'DELETE',
   });
 };

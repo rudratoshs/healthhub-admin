@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getDietPlan, deleteDietPlan, duplicateDietPlan } from '@/lib/dietPlans';
+import { getDietPlan, deleteDietPlan, duplicateDietPlan, getDietPlanMealPlans } from '@/lib/dietPlans';
 import { Loader } from '@/components/ui/loader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,6 +30,14 @@ const DietPlanDetail: React.FC = () => {
     queryFn: () => getDietPlan(dietPlanId),
     enabled: !!dietPlanId,
   });
+
+  const { data: mealPlansData } = useQuery({
+    queryKey: ['dietPlanMeals', dietPlanId],
+    queryFn: () => getDietPlanMealPlans(dietPlanId),
+    enabled: !!dietPlanId,
+  });
+
+  const hasMealPlans = (mealPlansData?.data?.length ?? 0) > 0;
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteDietPlan(dietPlanId),
@@ -82,13 +90,13 @@ const DietPlanDetail: React.FC = () => {
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800 hover:bg-green-200';
+        return 'success';
       case 'inactive':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+        return 'warning';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+        return 'info';
       default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+        return 'outline';
     }
   };
 
@@ -131,7 +139,7 @@ const DietPlanDetail: React.FC = () => {
         <div>
           <div className="flex items-center">
             <h1 className="text-2xl md:text-3xl font-bold font-playfair text-primary-900">{plan.title}</h1>
-            <Badge className={`ml-3 ${getStatusBadgeVariant(plan.status)}`}>
+            <Badge variant={getStatusBadgeVariant(plan.status)} className="ml-3">
               {plan.status.charAt(0).toUpperCase() + plan.status.slice(1)}
             </Badge>
           </div>
@@ -188,6 +196,7 @@ const DietPlanDetail: React.FC = () => {
         onConfirm={handleDelete}
         title={plan.title}
         isDeleting={deleteMutation.isPending}
+        hasMealPlans={hasMealPlans}
       />
 
       <DuplicateDietPlanDialog

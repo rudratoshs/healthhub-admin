@@ -79,12 +79,15 @@ export interface DietPlanFilters {
   status?: DietPlanStatus;
 }
 
-// Meal Plan types that will be needed for diet plan meal endpoints
+// Meal Plan types
+export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
 export interface MealPlan {
   id: number;
   diet_plan_id: number;
   day: number;
   date: string;
+  day_of_week?: DayOfWeek;
   meals: Meal[];
   created_at: string;
   updated_at: string;
@@ -121,4 +124,13 @@ export interface Food {
 
 export interface MealPlanListResponse {
   data: MealPlan[];
+}
+
+export interface MealPlanResponse {
+  data: MealPlan;
+}
+
+export interface CreateMealPlanRequest {
+  day_of_week: DayOfWeek;
+  date?: string;
 }
