@@ -48,6 +48,16 @@ import CreateAIConfiguration from "@/pages/aiConfiguration/CreateAIConfiguration
 import EditAIConfiguration from "@/pages/aiConfiguration/EditAIConfiguration";
 import TestAIConfigurationPage from "@/pages/aiConfiguration/TestAIConfigurationPage";
 
+// Web Assessment pages
+import WebAssessmentStart from "@/pages/webAssessment/WebAssessmentStart";
+import WebAssessmentQuestions from "@/pages/webAssessment/WebAssessmentQuestions";
+import WebAssessmentComplete from "@/pages/webAssessment/WebAssessmentComplete";
+
+// Web Diet Plan pages
+import WebDietPlanList from "@/pages/webDietPlan/WebDietPlanList";
+import WebDietPlanDetail from "@/pages/webDietPlan/WebDietPlanDetail";
+import WebMealDetail from "@/pages/webDietPlan/WebMealDetail";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -109,6 +119,16 @@ const App = () => (
               <Route path="assessments" element={<Assessments />} />
               <Route path="assessments/:id" element={<AssessmentDetail />} />
               <Route path="assessments/:id/result" element={<AssessmentResultPage />} />
+              
+              {/* Web Assessment Routes */}
+              <Route path="web-assessment/start" element={<WebAssessmentStart />} />
+              <Route path="web-assessment/questions" element={<WebAssessmentQuestions />} />
+              <Route path="web-assessment/complete" element={<WebAssessmentComplete />} />
+              
+              {/* Web Diet Plan Routes */}
+              <Route path="web-diet-plan" element={<WebDietPlanList />} />
+              <Route path="web-diet-plan/:planId" element={<WebDietPlanDetail />} />
+              <Route path="web-diet-plan/meal/:mealId" element={<WebMealDetail />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

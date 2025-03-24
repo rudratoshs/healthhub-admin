@@ -1,0 +1,218 @@
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import {
+  getWebAssessmentStatus,
+  startWebAssessment,
+  getWebAssessmentQuestion,
+  submitWebAssessmentResponse,
+  resumeWebAssessment
+} from '@/lib/webAssessment';
+import {
+  WebAssessmentStatus,
+  WebAssessmentQuestion,
+  StartAssessmentRequest,
+  ResumeAssessmentRequest
+} from '@/types/webAssessment';
+
+export const useWebAssessment = () => {
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<WebAssessmentQuestion | null>(null);
+  const [currentResponse, setCurrentResponse] = useState<any>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [isComplete, setIsComplete] = useState(false);
+  const [previousResponses, setPreviousResponses] = useState<Record<string, any>>({});
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Get assessment status
+  const statusQuery = useQuery({
+    queryKey: ['webAssessmentStatus'],
+    queryFn: getWebAssessmentStatus,
+    refetchOnWindowFocus: false,
+  });
+
+  // Set session ID and fetch first question when status is loaded
+  useEffect(() => {
+    if (statusQuery.data) {
+      if (statusQuery.data.has_active_assessment) {
+        setSessionId(statusQuery.data.session_id);
+        if (statusQuery.data.session_id) {
+          fetchQuestion(statusQuery.data.session_id);
+        }
+      } else if (statusQuery.data.has_completed_assessment) {
+        setIsComplete(true);
+      }
+    }
+  }, [statusQuery.data]);
+
+  // Fetch a question for a session
+  const fetchQuestion = async (sid: number) => {
+    try {
+      const question = await getWebAssessmentQuestion(sid);
+      setCurrentQuestion(question);
+      setCurrentResponse(previousResponses[question.question_id] || null);
+    } catch (error) {
+      console.error('Error fetching question:', error);
+    }
+  };
+
+  // Start assessment mutation
+  const startMutation = useMutation({
+    mutationFn: (data: StartAssessmentRequest) => startWebAssessment(data),
+    onSuccess: (data) => {
+      setSessionId(data.session_id);
+      if (data.next_question) {
+        setCurrentQuestion(data.next_question);
+      }
+      toast({
+        title: "Assessment Started",
+        description: "Your assessment has been started successfully."
+      });
+    },
+  });
+
+  // Resume assessment mutation
+  const resumeMutation = useMutation({
+    mutationFn: (data: ResumeAssessmentRequest) => resumeWebAssessment(data),
+    onSuccess: (data) => {
+      setSessionId(data.session_id);
+      setCurrentQuestion(data.current_question);
+      
+      // Process previous responses
+      const responses: Record<string, any> = {};
+      Object.entries(data.previous_responses).forEach(([key, value]) => {
+        responses[key] = value.response;
+      });
+      setPreviousResponses(responses);
+      
+      toast({
+        title: "Assessment Resumed",
+        description: "Your assessment has been resumed successfully."
+      });
+    },
+  });
+
+  // Submit response mutation
+  const submitMutation = useMutation({
+    mutationFn: (data: { sessionId: number; questionId: string; response: any }) => {
+      return submitWebAssessmentResponse({
+        session_id: data.sessionId,
+        question_id: data.questionId,
+        response: data.response
+      });
+    },
+    onSuccess: (data) => {
+      // Update previous responses
+      if (currentQuestion) {
+        setPreviousResponses(prev => ({
+          ...prev,
+          [currentQuestion.question_id]: currentResponse
+        }));
+      }
+      
+      // Check if assessment is complete
+      if (data.is_complete) {
+        setIsComplete(true);
+        toast({
+          title: "Assessment Complete",
+          description: "Your assessment has been completed successfully."
+        });
+        navigate('/web-assessment/complete');
+      } else if (data.next_question) {
+        // Move to next question
+        setCurrentQuestion(data.next_question);
+        setCurrentResponse(null);
+        setValidationError(null);
+      }
+    },
+  });
+
+  // Handle start assessment
+  const startAssessment = (type: "basic" | "moderate" | "comprehensive", abandonExisting: boolean = false) => {
+    startMutation.mutate({ assessment_type: type, abandon_existing: abandonExisting });
+  };
+
+  // Handle resume assessment
+  const resumeAssessment = (sid: number) => {
+    resumeMutation.mutate({ session_id: sid });
+  };
+
+  // Handle response changes
+  const handleResponseChange = (value: any) => {
+    setCurrentResponse(value);
+    setValidationError(null);
+  };
+
+  // Validate the current response
+  const validateResponse = (): boolean => {
+    if (!currentQuestion) return false;
+    
+    // Basic validation
+    if (currentResponse === null || currentResponse === undefined || currentResponse === '') {
+      setValidationError('This field is required');
+      return false;
+    }
+    
+    // Number validation
+    if (currentQuestion.validation && currentQuestion.validation.includes('numeric')) {
+      if (isNaN(Number(currentResponse))) {
+        setValidationError('Please enter a valid number');
+        return false;
+      }
+      
+      // Min/max validation
+      const minMatch = currentQuestion.validation.match(/min:(\d+)/);
+      const maxMatch = currentQuestion.validation.match(/max:(\d+)/);
+      
+      if (minMatch && Number(currentResponse) < Number(minMatch[1])) {
+        setValidationError(`Minimum value is ${minMatch[1]}`);
+        return false;
+      }
+      
+      if (maxMatch && Number(currentResponse) > Number(maxMatch[1])) {
+        setValidationError(`Maximum value is ${maxMatch[1]}`);
+        return false;
+      }
+    }
+    
+    // Multiple selection validation
+    if (currentQuestion.multiple && Array.isArray(currentResponse) && currentResponse.length === 0) {
+      setValidationError('Please select at least one option');
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Handle submit current response
+  const submitResponse = () => {
+    if (!sessionId || !currentQuestion) return;
+    
+    if (validateResponse()) {
+      submitMutation.mutate({
+        sessionId,
+        questionId: currentQuestion.question_id,
+        response: currentResponse
+      });
+    }
+  };
+
+  return {
+    status: statusQuery.data,
+    statusLoading: statusQuery.isLoading,
+    currentQuestion,
+    currentResponse,
+    sessionId,
+    isComplete,
+    validationError,
+    previousResponses,
+    startAssessment,
+    resumeAssessment,
+    handleResponseChange,
+    submitResponse,
+    loading: startMutation.isPending || resumeMutation.isPending || submitMutation.isPending
+  };
+};
