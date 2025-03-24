@@ -1,13 +1,18 @@
 
 import { DietPlan } from "./dietPlan";
-import { MealPlan } from "./mealPlan";
 
 export interface WebDietPlan extends DietPlan {
   meal_plans?: WebMealPlan[];
 }
 
-export interface WebMealPlan extends MealPlan {
+// Modified to not extend MealPlan to avoid type incompatibility
+export interface WebMealPlan {
+  id: number;
+  diet_plan_id: number;
+  day_of_week: string;
   meals?: WebMeal[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface WebMeal {

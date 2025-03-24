@@ -2,14 +2,14 @@
 import { api } from "./api";
 import { toast } from "@/hooks/use-toast";
 import { WebDietPlan, WebMealPlan, WebMeal, ArchiveDietPlanRequest } from "@/types/webDietPlan";
-import { ApiResponseList } from "@/types/api";
+import { ApiResponse, ApiResponseList } from "@/types/api";
 
 /**
  * Get the active diet plan for the authenticated user
  */
 export const getActiveDietPlan = async (): Promise<WebDietPlan> => {
   try {
-    const response = await api.get<{ data: WebDietPlan }>("/web-diet-plan/active");
+    const response = await api.get<ApiResponse<WebDietPlan>>("/web-diet-plan/active");
     return response.data;
   } catch (error) {
     toast({
@@ -26,7 +26,7 @@ export const getActiveDietPlan = async (): Promise<WebDietPlan> => {
  */
 export const getDayPlan = async (planId: number, day: string): Promise<WebMealPlan> => {
   try {
-    const response = await api.get<{ data: WebMealPlan }>(`/web-diet-plan/day?plan_id=${planId}&day=${day}`);
+    const response = await api.get<ApiResponse<WebMealPlan>>(`/web-diet-plan/day?plan_id=${planId}&day=${day}`);
     return response.data;
   } catch (error) {
     toast({
@@ -43,7 +43,7 @@ export const getDayPlan = async (planId: number, day: string): Promise<WebMealPl
  */
 export const getMealDetails = async (mealId: number): Promise<WebMeal> => {
   try {
-    const response = await api.get<{ data: WebMeal }>(`/web-diet-plan/meal?meal_id=${mealId}`);
+    const response = await api.get<ApiResponse<WebMeal>>(`/web-diet-plan/meal?meal_id=${mealId}`);
     return response.data;
   } catch (error) {
     toast({
