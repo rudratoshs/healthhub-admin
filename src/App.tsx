@@ -37,6 +37,11 @@ import DietPlanDetail from "@/pages/dietPlan/DietPlanDetail";
 import MealPlanDetail from "@/pages/mealPlan/MealPlanDetail";
 import CreateMealPlan from "@/pages/mealPlan/CreateMealPlan";
 
+// Assessment pages
+import Assessments from "@/pages/assessment/Assessments";
+import AssessmentDetail from "@/pages/assessment/AssessmentDetail";
+import AssessmentResultPage from "@/pages/assessment/AssessmentResultPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -87,6 +92,11 @@ const App = () => (
               {/* Meal Plan Routes */}
               <Route path="diet-plans/:dietPlanId/meal-plans/:id" element={<MealPlanDetail />} />
               <Route path="diet-plans/:dietPlanId/meal-plans/create" element={<CreateMealPlan />} />
+              
+              {/* Assessment Routes */}
+              <Route path="assessments" element={<Assessments />} />
+              <Route path="assessments/:id" element={<AssessmentDetail />} />
+              <Route path="assessments/:id/result" element={<AssessmentResultPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
