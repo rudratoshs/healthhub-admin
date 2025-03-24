@@ -42,6 +42,12 @@ import Assessments from "@/pages/assessment/Assessments";
 import AssessmentDetail from "@/pages/assessment/AssessmentDetail";
 import AssessmentResultPage from "@/pages/assessment/AssessmentResultPage";
 
+// AI Configuration pages
+import AIConfigurationSettings from "@/pages/aiConfiguration/AIConfigurationSettings";
+import CreateAIConfiguration from "@/pages/aiConfiguration/CreateAIConfiguration";
+import EditAIConfiguration from "@/pages/aiConfiguration/EditAIConfiguration";
+import TestAIConfigurationPage from "@/pages/aiConfiguration/TestAIConfigurationPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -82,6 +88,12 @@ const App = () => (
               <Route path="gyms/:id" element={<GymDetail />} />
               <Route path="gyms/:id/edit" element={<EditGym />} />
               <Route path="gyms/:id/users" element={<GymUsers />} />
+              
+              {/* AI Configuration Routes */}
+              <Route path="gyms/:id/ai-configurations" element={<AIConfigurationSettings />} />
+              <Route path="gyms/:id/ai-configurations/create" element={<CreateAIConfiguration />} />
+              <Route path="gyms/:gymId/ai-configurations/:configId/edit" element={<EditAIConfiguration />} />
+              <Route path="gyms/:gymId/ai-configurations/:configId/test" element={<TestAIConfigurationPage />} />
               
               {/* Diet Plan Routes */}
               <Route path="diet-plans" element={<DietPlans />} />

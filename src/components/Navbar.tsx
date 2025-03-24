@@ -1,11 +1,21 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserNav } from "@/components/UserNav";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavbarProps {
   toggleSidebar: () => void;
@@ -14,6 +24,11 @@ interface NavbarProps {
 const Navbar = ({ toggleSidebar }: NavbarProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user } = useAuth();
+
+  // Determine if user has gym_admin role to show AI settings
+  const isGymAdmin = user?.role === "gym_admin" || user?.role === "admin" || 
+                     (user?.roles && (user.roles.includes("gym_admin") || user.roles.includes("admin")));
 
   return (
     <div className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -80,6 +95,25 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
         </div>
         <div className="flex-1" />
         <div className="flex items-center gap-4">
+          {isGymAdmin && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/gyms/1/ai-configurations">AI Configurations</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile/settings">User Settings</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <ThemeToggle />
           <UserNav />
         </div>
