@@ -13,18 +13,27 @@ import { useNavigate } from 'react-router-dom';
 interface MealPlanDetailProps {
   dietPlanId: number;
   mealPlanId: number;
-  onBack: () => void;
+  onBack?: () => void; // Make onBack optional
 }
 
 const MealPlanDetail: React.FC<MealPlanDetailProps> = ({ 
   dietPlanId, 
   mealPlanId,
-  onBack
+  onBack 
 }) => {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useQuery({
     queryKey: ['mealPlan', dietPlanId, mealPlanId],
     queryFn: () => getMealPlan(dietPlanId, mealPlanId),
   });
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate(`/diet-plans/${dietPlanId}`);
+    }
+  };
 
   const getMealTypeIcon = (mealType: string) => {
     switch (mealType.toLowerCase()) {
@@ -60,7 +69,7 @@ const MealPlanDetail: React.FC<MealPlanDetailProps> = ({
           <Button 
             variant="outline" 
             className="mt-4"
-            onClick={onBack}
+            onClick={handleBack}
           >
             <ArrowLeft size={16} className="mr-2" />
             Back to Meal Plans
@@ -82,7 +91,7 @@ const MealPlanDetail: React.FC<MealPlanDetailProps> = ({
           <Calendar className="h-5 w-5 mr-2 text-primary" />
           {dayName} - {new Date(mealPlan.date).toLocaleDateString()}
         </h2>
-        <Button variant="outline" onClick={onBack}>
+        <Button variant="outline" onClick={handleBack}>
           <ArrowLeft size={16} className="mr-2" />
           Back to Meal Plans
         </Button>

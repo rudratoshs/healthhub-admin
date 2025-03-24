@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,13 +65,14 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ initialPhase = 1 }) => 
     queryKey: ['assessment', assessmentId],
     queryFn: () => getAssessment(Number(assessmentId)),
     enabled: !!assessmentId,
-    onSuccess: (data) => {
-      if (data.responses) {
-        setFormData(data.responses);
-        setCurrentPhase(data.current_phase || 1);
-      }
-    },
   });
+
+  useEffect(() => {
+    if (assessment && assessment.responses) {
+      setFormData(assessment.responses);
+      setCurrentPhase(assessment.current_phase || 1);
+    }
+  }, [assessment]);
 
   // Get current phase configuration
   const phaseConfig = ASSESSMENT_PHASES[currentPhase - 1] || ASSESSMENT_PHASES[0];
@@ -81,7 +83,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ initialPhase = 1 }) => 
     
     phase.questions.forEach(question => {
       if (question.type === 'number') {
-        let schema = z.number({
+        let schema = z.coerce.number({
           required_error: `${question.label} is required`,
           invalid_type_error: 'Must be a number',
         });
@@ -94,7 +96,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ initialPhase = 1 }) => 
         
         schemaMap[question.id] = schema;
       } else if (question.type === 'select' || question.type === 'radio') {
-        let schema = z.string();
+        let schema = z.string({
+          required_error: `${question.label} is required`,
+        });
         if (question.required) {
           schema = schema.min(1, { message: `${question.label} is required` });
         } else {
@@ -108,7 +112,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ initialPhase = 1 }) => 
         }
         schemaMap[question.id] = schema;
       } else {
-        let schema = z.string();
+        let schema = z.string({
+          required_error: `${question.label} is required`,
+        });
         if (question.required) {
           schema = schema.min(1, { message: `${question.label} is required` });
         } else {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,13 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar as CalendarIcon, Save, Calculator, Utensils } from 'lucide-react';
-import { DietPlan, CreateDietPlanRequest, UpdateDietPlanRequest } from '@/types/dietPlan';
+import { DietPlan, CreateDietPlanRequest, UpdateDietPlanRequest, DietPlanStatus } from '@/types/dietPlan';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 
-// Schema for the form validation
 const dietPlanSchema = z.object({
   client_id: z.coerce.number().min(1, 'Client ID is required'),
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -36,6 +34,8 @@ const dietPlanSchema = z.object({
   path: ["end_date"],
 });
 
+type DietPlanFormValues = z.infer<typeof dietPlanSchema>;
+
 interface DietPlanFormProps {
   initialValues?: Partial<DietPlan>;
   onSubmit: (data: CreateDietPlanRequest | UpdateDietPlanRequest) => void;
@@ -51,8 +51,7 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
   clientId,
   clients = [],
 }) => {
-  // Default form values
-  const defaultValues = {
+  const defaultValues: Partial<DietPlanFormValues> = {
     client_id: clientId || (initialValues?.client_id ?? 0),
     title: initialValues?.title ?? '',
     description: initialValues?.description ?? '',
@@ -60,17 +59,26 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
     protein_grams: initialValues?.protein_grams ?? 150,
     carbs_grams: initialValues?.carbs_grams ?? 225,
     fats_grams: initialValues?.fats_grams ?? 55,
-    status: initialValues?.status ?? 'active',
+    status: (initialValues?.status as DietPlanStatus) ?? 'active',
     start_date: initialValues?.start_date ? new Date(initialValues.start_date) : new Date(),
     end_date: initialValues?.end_date ? new Date(initialValues.end_date) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   };
 
-  const form = useForm<z.infer<typeof dietPlanSchema>>({
+  const form = useForm<DietPlanFormValues>({
     resolver: zodResolver(dietPlanSchema),
     defaultValues,
   });
 
-  // Calculate macronutrient percentages as user inputs values
+  const handleSubmit = (values: DietPlanFormValues) => {
+    const formattedData: CreateDietPlanRequest | UpdateDietPlanRequest = {
+      ...values,
+      start_date: values.start_date.toISOString(),
+      end_date: values.end_date.toISOString(),
+    };
+    
+    onSubmit(formattedData);
+  };
+
   const watchProtein = form.watch('protein_grams');
   const watchCarbs = form.watch('carbs_grams');
   const watchFats = form.watch('fats_grams');
@@ -80,7 +88,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
   const carbsPercentage = totalGrams > 0 ? Math.round((Number(watchCarbs) / totalGrams) * 100) : 0;
   const fatsPercentage = totalGrams > 0 ? Math.round((Number(watchFats) / totalGrams) * 100) : 0;
 
-  // Calculate calorie totals
   const proteinCalories = Number(watchProtein) * 4; // 4 calories per gram
   const carbsCalories = Number(watchCarbs) * 4; // 4 calories per gram
   const fatsCalories = Number(watchFats) * 9; // 9 calories per gram
@@ -88,7 +95,7 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 animate-fade-in">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 animate-fade-in">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <div className="bg-gradient-to-r from-primary-50 to-secondary-50 p-4 rounded-md">
@@ -96,7 +103,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 <Utensils className="h-5 w-5 mr-2 text-primary-600" /> Diet Plan Information
               </h3>
             
-              {/* Client ID */}
               <FormField
                 control={form.control}
                 name="client_id"
@@ -138,7 +144,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Title */}
               <FormField
                 control={form.control}
                 name="title"
@@ -153,7 +158,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -173,7 +177,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Status */}
               <FormField
                 control={form.control}
                 name="status"
@@ -204,7 +207,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
               </h3>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Start Date */}
                 <FormField
                   control={form.control}
                   name="start_date"
@@ -241,7 +243,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                   )}
                 />
 
-                {/* End Date */}
                 <FormField
                   control={form.control}
                   name="end_date"
@@ -288,7 +289,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 <Calculator className="h-5 w-5 mr-2 text-primary-600" /> Nutrition Targets
               </h3>
 
-              {/* Daily Calories */}
               <FormField
                 control={form.control}
                 name="daily_calories"
@@ -303,7 +303,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Protein */}
               <FormField
                 control={form.control}
                 name="protein_grams"
@@ -318,7 +317,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Carbs */}
               <FormField
                 control={form.control}
                 name="carbs_grams"
@@ -333,7 +331,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Fats */}
               <FormField
                 control={form.control}
                 name="fats_grams"
@@ -348,7 +345,6 @@ const DietPlanForm: React.FC<DietPlanFormProps> = ({
                 )}
               />
 
-              {/* Macronutrient Ratio Visual */}
               <div className="mt-6">
                 <h4 className="text-sm font-medium mb-2">Macronutrient Ratio</h4>
                 <div className="h-4 bg-gray-100 rounded-full overflow-hidden flex">

@@ -22,6 +22,10 @@ const MealPlanDetailPage: React.FC = () => {
     enabled: !!mealPlanId && !!dietPlanIdInt,
   });
 
+  const handleBack = () => {
+    navigate(`/diet-plans/${dietPlanIdInt}`);
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-6 flex justify-center items-center min-h-[400px]">
@@ -64,7 +68,7 @@ const MealPlanDetailPage: React.FC = () => {
           <p className="text-muted-foreground">View and manage meals for {dayOfWeek}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate(`/diet-plans/${dietPlanIdInt}`)}>
+          <Button variant="outline" onClick={handleBack}>
             <ArrowLeft size={16} className="mr-2" />
             Back to Diet Plan
           </Button>
@@ -87,8 +91,12 @@ const MealPlanDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Pass the correct props to MealPlanDetail component */}
-      <MealPlanDetail mealPlanId={mealPlanId} dietPlanId={dietPlanIdInt} />
+      {/* Pass the correct props to MealPlanDetail component with onBack function */}
+      <MealPlanDetail 
+        mealPlanId={mealPlanId} 
+        dietPlanId={dietPlanIdInt} 
+        onBack={handleBack} 
+      />
     </div>
   );
 };

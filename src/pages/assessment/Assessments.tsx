@@ -1,337 +1,237 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { PlusCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { getUserAssessments } from '@/lib/assessments';
-import StartAssessmentDialog from '@/components/assessment/StartAssessmentDialog';
-import { Assessment } from '@/types/assessment';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import {
-  ClipboardList,
-  PlusCircle,
-  ArrowUpRight,
-  CalendarRange,
-  Clock,
-  Utensils,
-  Activity,
-  AlertCircle,
-  CheckCircle,
-} from 'lucide-react';
 import { Loader } from '@/components/ui/loader';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/AuthContext';
+import { getAssessments } from '@/lib/assessments';
+import { Assessment } from '@/types/assessment';
+import StartAssessmentDialog from '@/components/assessment/StartAssessmentDialog';
 
 const Assessments: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const { data: assessments, isLoading } = useQuery({
-    queryKey: ['assessments', user?.id],
-    queryFn: () => getUserAssessments(user!.id),
-    enabled: !!user,
-    onError: () => {
-      toast({
-        title: 'Error',
-        description: 'Failed to load assessments',
-        variant: 'destructive',
-      });
+  const userId = user?.id || 0;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['assessments', userId],
+    queryFn: () => getAssessments(userId),
+    meta: {
+      onError: (error: any) => {
+        console.error('Failed to fetch assessments:', error);
+      }
     },
+    enabled: !!userId,
   });
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return (
-          <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-200">
-            <CheckCircle className="mr-1 h-3 w-3" />
-            Completed
-          </Badge>
-        );
-      case 'in_progress':
-        return (
-          <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-            <Clock className="mr-1 h-3 w-3" />
-            In Progress
-          </Badge>
-        );
-      case 'abandoned':
-        return (
-          <Badge variant="outline" className="bg-amber-100 text-amber-800 hover:bg-amber-200">
-            <AlertCircle className="mr-1 h-3 w-3" />
-            Abandoned
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'diet':
-        return <Utensils className="h-4 w-4 text-green-600" />;
-      case 'fitness':
-        return <Activity className="h-4 w-4 text-blue-600" />;
-      case 'health':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return <ClipboardList className="h-4 w-4" />;
-    }
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
   };
-
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'diet':
-        return 'Diet Assessment';
-      case 'fitness':
-        return 'Fitness Assessment';
-      case 'health':
-        return 'Health Assessment';
-      default:
-        return 'Assessment';
-    }
-  };
-
-  const handleAssessmentClick = (assessment: Assessment) => {
-    if (assessment.status === 'completed') {
-      navigate(`/assessments/${assessment.id}/result`);
-    } else {
-      navigate(`/assessments/${assessment.id}`);
-    }
-  };
-
-  // Filter assessments by status
-  const completedAssessments = assessments?.filter(a => a.status === 'completed') || [];
-  const inProgressAssessments = assessments?.filter(a => a.status === 'in_progress') || [];
-  const allAssessments = assessments || [];
-
-  if (isLoading) {
-    return <Loader size="lg" />;
-  }
 
   return (
     <div className="container py-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Assessments</h1>
           <p className="text-muted-foreground">
-            Take assessments to get personalized diet and fitness plans
+            Manage and view your assessments
           </p>
         </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          New Assessment
+        <Button onClick={handleOpenDialog}>
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Start Assessment
         </Button>
       </div>
 
-      <Separator className="my-6" />
-
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="in-progress">In Progress</TabsTrigger>
+      <Tabs defaultValue="active" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="active">Active</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="all">
-          {allAssessments.length === 0 ? (
-            <Card className="text-center p-6">
-              <CardHeader>
-                <CardTitle>No Assessments Found</CardTitle>
-                <CardDescription>You haven't taken any assessments yet.</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-center pt-2">
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Start New Assessment
-                </Button>
-              </CardFooter>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allAssessments.map((assessment) => (
-                <Card 
-                  key={assessment.id} 
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => handleAssessmentClick(assessment)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(assessment.assessment_type)}
-                        <CardTitle className="text-lg">
-                          {getTypeLabel(assessment.assessment_type)}
-                        </CardTitle>
-                      </div>
-                      {getStatusBadge(assessment.status)}
-                    </div>
-                    <CardDescription>
-                      Assessment #{assessment.id}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-3">
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="flex items-center gap-1">
-                        <CalendarRange className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {new Date(assessment.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          Phase {assessment.current_phase} of 4
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="ghost" className="w-full gap-1">
-                      {assessment.status === 'completed' ? 'View Results' : 'Continue'} 
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+        <TabsContent value="active" className="space-y-2">
+          {isLoading ? (
+            <div className="flex justify-center">
+              <Loader size="lg" />
             </div>
+          ) : error ? (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                Failed to fetch assessments. Please try again.
+              </AlertDescription>
+            </Alert>
+          ) : data && data.length > 0 ? (
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data
+                .filter((assessment) => assessment.status === 'in_progress')
+                .map((assessment) => (
+                  <Card
+                    key={assessment.id}
+                    className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+                    onClick={() => navigate(`/assessments/${assessment.id}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold">
+                        {assessment.assessment_type.charAt(0).toUpperCase() +
+                          assessment.assessment_type.slice(1)}{' '}
+                        Assessment
+                      </CardTitle>
+                      <CardDescription>
+                        Status: {assessment.status}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p>
+                        Current Phase: {assessment.current_phase}
+                      </p>
+                    </CardContent>
+                    <CardFooter className="text-sm text-muted-foreground">
+                      Created at:{' '}
+                      {new Date(assessment.created_at).toLocaleDateString()}
+                    </CardFooter>
+                  </Card>
+                ))}
+            </div>
+          ) : (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                No active assessments found.
+              </AlertDescription>
+            </Alert>
           )}
         </TabsContent>
-
-        <TabsContent value="in-progress">
-          {inProgressAssessments.length === 0 ? (
-            <Card className="text-center p-6">
-              <CardHeader>
-                <CardTitle>No In-Progress Assessments</CardTitle>
-                <CardDescription>You don't have any assessments in progress.</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-center pt-2">
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Start New Assessment
-                </Button>
-              </CardFooter>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {inProgressAssessments.map((assessment) => (
-                <Card 
-                  key={assessment.id} 
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => navigate(`/assessments/${assessment.id}`)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(assessment.assessment_type)}
-                        <CardTitle className="text-lg">
-                          {getTypeLabel(assessment.assessment_type)}
-                        </CardTitle>
-                      </div>
-                      {getStatusBadge(assessment.status)}
-                    </div>
-                    <CardDescription>
-                      Assessment #{assessment.id}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-3">
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="flex items-center gap-1">
-                        <CalendarRange className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {new Date(assessment.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          Phase {assessment.current_phase} of 4
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="ghost" className="w-full gap-1">
-                      Continue <ArrowUpRight className="h-4 w-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+        <TabsContent value="completed" className="space-y-2">
+          {isLoading ? (
+            <div className="flex justify-center">
+              <Loader size="lg" />
             </div>
+          ) : error ? (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                Failed to fetch assessments. Please try again.
+              </AlertDescription>
+            </Alert>
+          ) : data && data.length > 0 ? (
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data
+                .filter((assessment) => assessment.status === 'completed')
+                .map((assessment) => (
+                  <Card
+                    key={assessment.id}
+                    className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+                    onClick={() => navigate(`/assessments/${assessment.id}/result`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold">
+                        {assessment.assessment_type.charAt(0).toUpperCase() +
+                          assessment.assessment_type.slice(1)}{' '}
+                        Assessment
+                      </CardTitle>
+                      <CardDescription>
+                        Status: {assessment.status}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p>
+                        Completed at:{' '}
+                        {new Date(assessment.updated_at).toLocaleDateString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          ) : (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                No completed assessments found.
+              </AlertDescription>
+            </Alert>
           )}
         </TabsContent>
-
-        <TabsContent value="completed">
-          {completedAssessments.length === 0 ? (
-            <Card className="text-center p-6">
-              <CardHeader>
-                <CardTitle>No Completed Assessments</CardTitle>
-                <CardDescription>You haven't completed any assessments yet.</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-center pt-2">
-                <Button onClick={() => setIsDialogOpen(true)}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Start New Assessment
-                </Button>
-              </CardFooter>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {completedAssessments.map((assessment) => (
-                <Card 
-                  key={assessment.id} 
-                  className="cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => navigate(`/assessments/${assessment.id}/result`)}
+        <TabsContent value="all" className="space-y-2">
+          {isLoading ? (
+            <div className="flex justify-center">
+              <Loader size="lg" />
+            </div>
+          ) : error ? (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                Failed to fetch assessments. Please try again.
+              </AlertDescription>
+            </Alert>
+          ) : data && data.length > 0 ? (
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data.map((assessment) => (
+                <Card
+                  key={assessment.id}
+                  className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+                  onClick={() =>
+                    navigate(
+                      assessment.status === 'completed'
+                        ? `/assessments/${assessment.id}/result`
+                        : `/assessments/${assessment.id}`
+                    )
+                  }
+                  style={{ cursor: 'pointer' }}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(assessment.assessment_type)}
-                        <CardTitle className="text-lg">
-                          {getTypeLabel(assessment.assessment_type)}
-                        </CardTitle>
-                      </div>
-                      {getStatusBadge(assessment.status)}
-                    </div>
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold">
+                      {assessment.assessment_type.charAt(0).toUpperCase() +
+                        assessment.assessment_type.slice(1)}{' '}
+                      Assessment
+                    </CardTitle>
                     <CardDescription>
-                      Assessment #{assessment.id}
+                      Status: {assessment.status}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pb-3">
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="flex items-center gap-1">
-                        <CalendarRange className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {new Date(assessment.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="text-green-600">Completed</span>
-                      </div>
-                    </div>
+                  <CardContent>
+                    {assessment.status === 'completed' ? (
+                      <p>
+                        Completed at:{' '}
+                        {new Date(assessment.updated_at).toLocaleDateString()}
+                      </p>
+                    ) : (
+                      <p>
+                        Current Phase: {assessment.current_phase}
+                      </p>
+                    )}
                   </CardContent>
-                  <CardFooter>
-                    <Button variant="ghost" className="w-full gap-1">
-                      View Results <ArrowUpRight className="h-4 w-4" />
-                    </Button>
-                  </CardFooter>
                 </Card>
               ))}
             </div>
+          ) : (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>No assessments found.</AlertDescription>
+            </Alert>
           )}
         </TabsContent>
       </Tabs>
 
       <StartAssessmentDialog
-        userId={user?.id || 0}
+        userId={userId}
         isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        onClose={handleCloseDialog}
       />
     </div>
   );

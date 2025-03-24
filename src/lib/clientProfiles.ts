@@ -1,29 +1,40 @@
 
-import { apiRequest } from "./api";
-import { ClientProfileResponse, CreateClientProfileRequest, UpdateClientProfileRequest } from "@/types/clientProfile";
+// Fix error handling in clientProfiles.ts by adding error message type
 
-export const getClientProfile = async (userId: number): Promise<ClientProfileResponse> => {
-  return apiRequest<ClientProfileResponse>(`/users/${userId}/profile`, {
-    method: "GET",
-  });
+import { api } from '@/lib/api';
+import {
+  ClientProfile,
+  ClientProfileListResponse,
+  CreateClientProfileRequest,
+  UpdateClientProfileRequest,
+} from '@/types/clientProfile';
+
+export type ApiError = {
+  message: string;
+  errors?: Record<string, string[]>;
+};
+
+export const getClientProfiles = async (): Promise<ClientProfileListResponse> => {
+  return await api.get('/client-profiles');
+};
+
+export const getClientProfile = async (id: number): Promise<{ data: ClientProfile }> => {
+  return await api.get(`/client-profiles/${id}`);
 };
 
 export const createClientProfile = async (
-  userId: number,
   data: CreateClientProfileRequest
-): Promise<ClientProfileResponse> => {
-  return apiRequest<ClientProfileResponse>(`/users/${userId}/profile`, {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+): Promise<{ data: ClientProfile }> => {
+  return await api.post('/client-profiles', data);
 };
 
 export const updateClientProfile = async (
-  userId: number,
+  id: number,
   data: UpdateClientProfileRequest
-): Promise<ClientProfileResponse> => {
-  return apiRequest<ClientProfileResponse>(`/users/${userId}/profile`, {
-    method: "PUT",
-    body: JSON.stringify(data),
-  });
+): Promise<{ data: ClientProfile }> => {
+  return await api.put(`/client-profiles/${id}`, data);
+};
+
+export const deleteClientProfile = async (id: number): Promise<void> => {
+  return await api.delete(`/client-profiles/${id}`);
 };

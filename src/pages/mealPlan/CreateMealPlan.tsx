@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -31,9 +30,7 @@ const CreateMealPlan: React.FC = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      day_of_week: undefined,
-    },
+    defaultValues: {},
   });
 
   const { mutate, isPending } = useMutation({

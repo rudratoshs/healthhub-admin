@@ -40,7 +40,9 @@ interface StartAssessmentDialogProps {
 }
 
 const formSchema = z.object({
-  assessment_type: z.enum(['diet', 'fitness', 'health']),
+  assessment_type: z.enum(['diet', 'fitness', 'health'], {
+    required_error: "Assessment type is required",
+  }),
 });
 
 const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
