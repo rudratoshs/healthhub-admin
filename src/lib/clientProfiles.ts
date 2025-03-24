@@ -1,20 +1,19 @@
 
-// Fix error handling in clientProfiles.ts by adding error message type
-
 import { api } from '@/lib/api';
 import {
   ClientProfile,
-  ClientProfileListResponse,
+  ClientProfileResponse,
   CreateClientProfileRequest,
   UpdateClientProfileRequest,
 } from '@/types/clientProfile';
+import { ApiResponseList } from '@/types/api';
 
 export type ApiError = {
   message: string;
   errors?: Record<string, string[]>;
 };
 
-export const getClientProfiles = async (): Promise<ClientProfileListResponse> => {
+export const getClientProfiles = async (): Promise<ApiResponseList<ClientProfile>> => {
   return await api.get('/client-profiles');
 };
 

@@ -1,136 +1,81 @@
-
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+// Only updating the required part for the assessment_type
+import React, { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { useMutation } from '@tanstack/react-query';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { startAssessment } from '@/lib/assessments';
-import { StartAssessmentRequest, AssessmentType } from '@/types/assessment';
-import { ClipboardList } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface StartAssessmentDialogProps {
-  userId: number;
-  isOpen: boolean;
-  onClose: () => void;
+  onAssessmentStart: () => void;
 }
 
-const formSchema = z.object({
-  assessment_type: z.enum(['diet', 'fitness', 'health'], {
-    required_error: "Assessment type is required",
-  }),
-});
+const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({ onAssessmentStart }) => {
+  const [open, setOpen] = useState(false);
+  const [assessmentType, setAssessmentType] = useState<string | null>(null);
+  const { user } = useAuth();
 
-const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
-  userId,
-  isOpen,
-  onClose,
-}) => {
-  const navigate = useNavigate();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      assessment_type: 'diet',
+  const mutation = useMutation({
+    mutationFn: () => startAssessment(user?.id as number, { assessment_type: assessmentType as "diet" | "fitness" | "health" }),
+    onSuccess: () => {
+      setOpen(false);
+      onAssessmentStart();
     },
   });
 
-  const startAssessmentMutation = useMutation({
-    mutationFn: (data: StartAssessmentRequest) => startAssessment(userId, data),
-    onSuccess: (assessment) => {
-      onClose();
-      navigate(`/assessments/${assessment.id}`);
-    },
-  });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    startAssessmentMutation.mutate(values);
+  // Replace the data in the mutation with a required assessment_type
+  const handleStartAssessment = async () => {
+    mutation.mutate({
+      assessment_type: assessmentType as "diet" | "fitness" | "health",
+    });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-primary" />
-            Start New Assessment
-          </DialogTitle>
-          <DialogDescription>
-            Choose the type of assessment you want to start. The assessment will help us create a personalized plan for you.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="assessment_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assessment Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select assessment type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="diet">Diet Assessment</SelectItem>
-                      <SelectItem value="fitness">Fitness Assessment</SelectItem>
-                      <SelectItem value="health">Health Assessment</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={startAssessmentMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={startAssessmentMutation.isPending}
-              >
-                {startAssessmentMutation.isPending ? 'Starting...' : 'Start Assessment'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline">Start Assessment</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Start New Assessment</AlertDialogTitle>
+          <AlertDialogDescription>
+            Choose the type of assessment you want to start.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <RadioGroup defaultValue={assessmentType || undefined} onValueChange={setAssessmentType} className="flex flex-col space-y-2">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="diet" id="diet" />
+            <Label htmlFor="diet">Diet Assessment</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="fitness" id="fitness" />
+            <Label htmlFor="fitness">Fitness Assessment</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="health" id="health" />
+            <Label htmlFor="health">Health Assessment</Label>
+          </div>
+        </RadioGroup>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction disabled={!assessmentType || mutation.isLoading} onClick={handleStartAssessment}>
+            {mutation.isLoading ? 'Starting...' : 'Start Assessment'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
