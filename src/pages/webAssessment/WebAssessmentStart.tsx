@@ -15,6 +15,7 @@ const WebAssessmentStart: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<"basic" | "moderate" | "comprehensive">("moderate");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Redirect to assessment page if there's an active session
   React.useEffect(() => {
@@ -42,6 +43,10 @@ const WebAssessmentStart: React.FC = () => {
 
   const handleCardSelect = (type: "basic" | "moderate" | "comprehensive") => {
     setSelectedType(type);
+  };
+
+  const handleStartAssessmentClick = () => {
+    setDialogOpen(true);
   };
 
   if (statusLoading) {
@@ -187,13 +192,23 @@ const WebAssessmentStart: React.FC = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
+              <Button onClick={handleStartAssessmentClick}>Start Assessment</Button>
               <StartAssessmentDialog 
                 onAssessmentStart={handleAssessmentStart}
+                hasActiveAssessment={false}
               />
             </CardFooter>
           </Card>
         )}
       </div>
+      
+      {/* Separate dialog trigger to pass the selected type */}
+      {dialogOpen && (
+        <StartAssessmentDialog 
+          onAssessmentStart={handleAssessmentStart}
+          hasActiveAssessment={false}
+        />
+      )}
     </div>
   );
 };

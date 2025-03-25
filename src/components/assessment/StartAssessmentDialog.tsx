@@ -1,4 +1,4 @@
-// Only updating the required part for the assessment_type
+
 import React, { useState } from 'react';
 import {
   AlertDialog,
@@ -24,22 +24,24 @@ interface StartAssessmentDialogProps {
 
 const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({ onAssessmentStart }) => {
   const [open, setOpen] = useState(false);
-  const [assessmentType, setAssessmentType] = useState<string | null>(null);
+  const [assessmentType, setAssessmentType] = useState<"diet" | "fitness" | "health">("diet");
   const { user } = useAuth();
 
   const mutation = useMutation({
-    mutationFn: () => startAssessment(user?.id as number, { assessment_type: assessmentType as "diet" | "fitness" | "health" }),
+    mutationFn: () => {
+      if (!user?.id) {
+        throw new Error("User ID is required");
+      }
+      return startAssessment(user.id, { assessment_type: assessmentType });
+    },
     onSuccess: () => {
       setOpen(false);
       onAssessmentStart();
     },
   });
 
-  // Replace the data in the mutation with a required assessment_type
   const handleStartAssessment = async () => {
-    mutation.mutate({
-      assessment_type: assessmentType as "diet" | "fitness" | "health",
-    });
+    mutation.mutate();
   };
 
   return (
@@ -54,7 +56,7 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({ onAssessm
             Choose the type of assessment you want to start.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <RadioGroup defaultValue={assessmentType || undefined} onValueChange={setAssessmentType} className="flex flex-col space-y-2">
+        <RadioGroup defaultValue={assessmentType} onValueChange={(value) => setAssessmentType(value as "diet" | "fitness" | "health")} className="flex flex-col space-y-2">
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="diet" id="diet" />
             <Label htmlFor="diet">Diet Assessment</Label>
@@ -70,8 +72,8 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({ onAssessm
         </RadioGroup>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction disabled={!assessmentType || mutation.isLoading} onClick={handleStartAssessment}>
-            {mutation.isLoading ? 'Starting...' : 'Start Assessment'}
+          <AlertDialogAction disabled={mutation.isPending} onClick={handleStartAssessment}>
+            {mutation.isPending ? 'Starting...' : 'Start Assessment'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

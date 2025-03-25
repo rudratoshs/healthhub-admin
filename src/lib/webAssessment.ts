@@ -51,7 +51,7 @@ export const startWebAssessment = async (data: StartAssessmentRequest): Promise<
     return response.data;
   } catch (error) {
     console.error("Failed to start assessment:", error);
-    // We don't show toast here because we handle errors in the hook
+    // We don't show toast here because we handle errors in the hook/component
     throw error;
   }
 };
@@ -61,6 +61,7 @@ export const startWebAssessment = async (data: StartAssessmentRequest): Promise<
  */
 export const deleteWebAssessment = async (data: DeleteAssessmentRequest): Promise<ApiResponse<any>> => {
   try {
+    // Use DELETE method as specified in the API documentation
     const response = await api.post<ApiResponse<any>>("/web-assessment/delete", data);
     toast({
       title: "Assessment Deleted",

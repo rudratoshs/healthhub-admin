@@ -8,12 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader } from '@/components/ui/loader';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
-import { getAssessments } from '@/lib/assessments';
-import { Assessment } from '@/types/assessment';
+import { getUserAssessments } from '@/lib/assessments';
 import StartAssessmentDialog from '@/components/assessment/StartAssessmentDialog';
 
 const Assessments: React.FC = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -21,7 +20,7 @@ const Assessments: React.FC = () => {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['assessments', userId],
-    queryFn: () => getAssessments(userId),
+    queryFn: () => getUserAssessments(userId),
     meta: {
       onError: (error: any) => {
         console.error('Failed to fetch assessments:', error);
@@ -30,12 +29,9 @@ const Assessments: React.FC = () => {
     enabled: !!userId,
   });
 
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+  const handleAssessmentStart = () => {
+    // Refresh the assessment list
+    window.location.reload();
   };
 
   return (
@@ -47,10 +43,7 @@ const Assessments: React.FC = () => {
             Manage and view your assessments
           </p>
         </div>
-        <Button onClick={handleOpenDialog}>
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Start Assessment
-        </Button>
+        <StartAssessmentDialog onAssessmentStart={handleAssessmentStart} />
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
@@ -227,12 +220,6 @@ const Assessments: React.FC = () => {
           )}
         </TabsContent>
       </Tabs>
-
-      <StartAssessmentDialog
-        userId={userId}
-        isOpen={isDialogOpen}
-        onClose={handleCloseDialog}
-      />
     </div>
   );
 };

@@ -33,6 +33,7 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
   const [assessmentType, setAssessmentType] = useState<"basic" | "moderate" | "comprehensive">("moderate");
   const [activeView, setActiveView] = useState<'select-type' | 'confirm-delete'>('select-type');
   const [error, setError] = useState<string | null>(null);
+  const [existingSessionId, setExistingSessionId] = useState<number | null>(null);
 
   // Reset dialog state when it's closed
   const handleOpenChange = (isOpen: boolean) => {
@@ -40,6 +41,7 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
     if (!isOpen) {
       setActiveView('select-type');
       setError(null);
+      setExistingSessionId(null);
     }
   };
 
@@ -54,11 +56,15 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
       onAssessmentStart();
     },
     onError: (error: any) => {
-      // If there's an existing assessment
-      if (error?.response?.data?.message === "You already have an active assessment session") {
+      // Check if this is an error about existing session
+      const errorMessage = error?.response?.data?.message || "";
+      const sessionId = error?.response?.data?.session_id;
+      
+      if (errorMessage === "You already have an active assessment session" && sessionId) {
+        setExistingSessionId(sessionId);
         setError("You already have an active assessment. Would you like to resume it or start a new one?");
       } else {
-        setError(error?.response?.data?.message || "Failed to start assessment");
+        setError(errorMessage || "Failed to start assessment");
       }
     }
   });
@@ -94,8 +100,9 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
   };
 
   const handleDeleteAndStart = () => {
-    if (sessionId) {
-      deleteMutation.mutate(sessionId);
+    const idToDelete = existingSessionId || sessionId;
+    if (idToDelete) {
+      deleteMutation.mutate(idToDelete);
     }
   };
 
@@ -123,7 +130,7 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
               </DialogDescription>
             </DialogHeader>
             
-            {error && error.includes("active assessment") ? (
+            {error && (error.includes("active assessment") || existingSessionId) ? (
               <Alert className="mb-4">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Active Assessment Found</AlertTitle>
@@ -171,7 +178,7 @@ const StartAssessmentDialog: React.FC<StartAssessmentDialogProps> = ({
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              {(!hasActiveAssessment && !error?.includes("active assessment")) && (
+              {(!hasActiveAssessment && !error?.includes("active assessment") && !existingSessionId) && (
                 <Button 
                   onClick={handleStartAssessment} 
                   disabled={startMutation.isPending}
