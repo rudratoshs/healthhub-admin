@@ -10,15 +10,17 @@ import {
   SubmitResponseRequest,
   ResumeAssessmentRequest
 } from "@/types/webAssessment";
+import { ApiResponse } from "@/types/api";
 
 /**
  * Get the assessment status for the authenticated user
  */
 export const getWebAssessmentStatus = async (): Promise<WebAssessmentStatus> => {
   try {
-    const response = await api.get<{ data: WebAssessmentStatus }>("/web-assessment/status");
+    const response = await api.get<ApiResponse<WebAssessmentStatus>>("/web-assessment/status");
     return response.data;
   } catch (error) {
+    console.error("Failed to retrieve assessment status:", error);
     toast({
       title: "Error",
       description: "Failed to retrieve assessment status.",
@@ -33,18 +35,22 @@ export const getWebAssessmentStatus = async (): Promise<WebAssessmentStatus> => 
  */
 export const startWebAssessment = async (data: StartAssessmentRequest): Promise<WebAssessmentResponse> => {
   try {
-    const response = await api.post<{ data: WebAssessmentResponse }>("/web-assessment/start", data);
-    toast({
-      title: "Assessment Started",
-      description: "Your assessment has been started successfully."
-    });
+    const response = await api.post<ApiResponse<WebAssessmentResponse>>("/web-assessment/start", data);
+    if (!data.abandon_existing) {
+      toast({
+        title: "Assessment Started",
+        description: "Your assessment has been started successfully."
+      });
+    } else {
+      toast({
+        title: "New Assessment Started",
+        description: "Your previous assessment has been abandoned and a new one started."
+      });
+    }
     return response.data;
   } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to start assessment.",
-      variant: "destructive"
-    });
+    console.error("Failed to start assessment:", error);
+    // We don't show toast here because we handle errors in the hook
     throw error;
   }
 };
@@ -54,9 +60,10 @@ export const startWebAssessment = async (data: StartAssessmentRequest): Promise<
  */
 export const getWebAssessmentQuestion = async (sessionId: number): Promise<WebAssessmentQuestion> => {
   try {
-    const response = await api.get<{ data: WebAssessmentQuestion }>(`/web-assessment/question?session_id=${sessionId}`);
+    const response = await api.get<ApiResponse<WebAssessmentQuestion>>(`/web-assessment/question?session_id=${sessionId}`);
     return response.data;
   } catch (error) {
+    console.error("Failed to retrieve assessment question:", error);
     toast({
       title: "Error",
       description: "Failed to retrieve assessment question.",
@@ -71,14 +78,11 @@ export const getWebAssessmentQuestion = async (sessionId: number): Promise<WebAs
  */
 export const submitWebAssessmentResponse = async (data: SubmitResponseRequest): Promise<WebAssessmentResponse> => {
   try {
-    const response = await api.post<{ data: WebAssessmentResponse }>("/web-assessment/respond", data);
+    const response = await api.post<ApiResponse<WebAssessmentResponse>>("/web-assessment/respond", data);
     return response.data;
   } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to submit response.",
-      variant: "destructive"
-    });
+    console.error("Failed to submit response:", error);
+    // We don't show toast here because we handle errors in the hook
     throw error;
   }
 };
@@ -88,18 +92,11 @@ export const submitWebAssessmentResponse = async (data: SubmitResponseRequest): 
  */
 export const resumeWebAssessment = async (data: ResumeAssessmentRequest): Promise<WebAssessmentResumeResponse> => {
   try {
-    const response = await api.post<{ data: WebAssessmentResumeResponse }>("/web-assessment/resume", data);
-    toast({
-      title: "Assessment Resumed",
-      description: "Your assessment has been resumed successfully."
-    });
+    const response = await api.post<ApiResponse<WebAssessmentResumeResponse>>("/web-assessment/resume", data);
     return response.data;
   } catch (error) {
-    toast({
-      title: "Error",
-      description: "Failed to resume assessment.",
-      variant: "destructive"
-    });
+    console.error("Failed to resume assessment:", error);
+    // We don't show toast here because we handle errors in the hook
     throw error;
   }
 };

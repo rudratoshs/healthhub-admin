@@ -24,6 +24,7 @@ export const useWebAssessment = () => {
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [previousResponses, setPreviousResponses] = useState<Record<string, any>>({});
+  const [totalPhases, setTotalPhases] = useState(4); // Default value, update from API if available
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -56,6 +57,11 @@ export const useWebAssessment = () => {
       setCurrentResponse(previousResponses[question.question_id] || null);
     } catch (error) {
       console.error('Error fetching question:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load the assessment question.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -66,12 +72,26 @@ export const useWebAssessment = () => {
       setSessionId(data.session_id);
       if (data.next_question) {
         setCurrentQuestion(data.next_question);
+        setCurrentResponse(null);
       }
       toast({
         title: "Assessment Started",
         description: "Your assessment has been started successfully."
       });
     },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Failed to start assessment";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      
+      // If there's an active session, we can redirect to it
+      if (error?.response?.data?.session_id) {
+        setSessionId(error.response.data.session_id);
+      }
+    }
   });
 
   // Resume assessment mutation
@@ -93,6 +113,14 @@ export const useWebAssessment = () => {
         description: "Your assessment has been resumed successfully."
       });
     },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Failed to resume assessment";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
   });
 
   // Submit response mutation
@@ -128,6 +156,15 @@ export const useWebAssessment = () => {
         setValidationError(null);
       }
     },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Failed to submit response";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      setValidationError(errorMessage);
+    }
   });
 
   // Handle start assessment
@@ -164,8 +201,8 @@ export const useWebAssessment = () => {
       }
       
       // Min/max validation
-      const minMatch = currentQuestion.validation.match(/min:(\d+)/);
-      const maxMatch = currentQuestion.validation.match(/max:(\d+)/);
+      const minMatch = currentQuestion.validation?.match(/min:(\d+)/);
+      const maxMatch = currentQuestion.validation?.match(/max:(\d+)/);
       
       if (minMatch && Number(currentResponse) < Number(minMatch[1])) {
         setValidationError(`Minimum value is ${minMatch[1]}`);
@@ -200,6 +237,13 @@ export const useWebAssessment = () => {
     }
   };
 
+  // Refresh status after a successful start or resume
+  useEffect(() => {
+    if (sessionId) {
+      statusQuery.refetch();
+    }
+  }, [sessionId]);
+
   return {
     status: statusQuery.data,
     statusLoading: statusQuery.isLoading,
@@ -209,10 +253,14 @@ export const useWebAssessment = () => {
     isComplete,
     validationError,
     previousResponses,
+    totalPhases,
     startAssessment,
     resumeAssessment,
     handleResponseChange,
     submitResponse,
-    loading: startMutation.isPending || resumeMutation.isPending || submitMutation.isPending
+    loading: startMutation.isPending || resumeMutation.isPending || submitMutation.isPending,
+    startError: startMutation.error,
+    resumeError: resumeMutation.error,
+    submitError: submitMutation.error
   };
 };

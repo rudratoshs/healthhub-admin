@@ -8,25 +8,24 @@ import { Loader } from '@/components/ui/loader';
 import { useAuth } from '@/contexts/AuthContext';
 import { AlertCircle, Activity, CheckCircle, ArrowRight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import StartAssessmentDialog from '@/components/webAssessment/StartAssessmentDialog';
 
 const WebAssessmentStart: React.FC = () => {
-  const [assessmentType, setAssessmentType] = React.useState<"basic" | "moderate" | "comprehensive">("moderate");
-  const [abandonExisting, setAbandonExisting] = React.useState(false);
-  const { status, statusLoading, startAssessment, resumeAssessment, sessionId, loading } = useWebAssessment();
+  const { status, statusLoading, resumeAssessment, loading } = useWebAssessment();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect to assessment page if there's an active session
   React.useEffect(() => {
-    if (status?.has_active_assessment && sessionId) {
+    if (status?.has_active_assessment && status.session_id) {
       navigate('/web-assessment/questions');
     }
-  }, [status, sessionId, navigate]);
+  }, [status, navigate]);
 
-  const handleStart = () => {
-    startAssessment(assessmentType, abandonExisting);
+  const handleAssessmentStart = () => {
+    if (status?.has_active_assessment && status.session_id) {
+      navigate('/web-assessment/questions');
+    }
   };
 
   const handleResume = () => {
@@ -93,9 +92,11 @@ const WebAssessmentStart: React.FC = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline" onClick={() => setAbandonExisting(true)}>
-                Start New Assessment
-              </Button>
+              <StartAssessmentDialog 
+                onAssessmentStart={handleAssessmentStart}
+                hasActiveAssessment={true}
+                sessionId={status.session_id}
+              />
               <Button onClick={handleResume}>
                 Resume <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -115,9 +116,10 @@ const WebAssessmentStart: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardFooter className="flex justify-between pt-4">
-              <Button variant="outline" onClick={() => setAbandonExisting(true)}>
-                Start New Assessment
-              </Button>
+              <StartAssessmentDialog 
+                onAssessmentStart={handleAssessmentStart}
+                hasActiveAssessment={false}
+              />
               <Button onClick={handleViewResults} variant="default">
                 View Results <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -125,7 +127,7 @@ const WebAssessmentStart: React.FC = () => {
           </Card>
         )}
 
-        {(!status?.has_active_assessment || abandonExisting) && (
+        {(!status?.has_active_assessment && !status?.has_completed_assessment) && (
           <Card className="shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -133,61 +135,43 @@ const WebAssessmentStart: React.FC = () => {
                 Start New Assessment
               </CardTitle>
               <CardDescription>
-                Choose the type of assessment you'd like to complete
+                Take our wellness assessment to receive a personalized health and nutrition plan
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RadioGroup 
-                defaultValue={assessmentType} 
-                onValueChange={(value) => setAssessmentType(value as "basic" | "moderate" | "comprehensive")}
-                className="space-y-4"
-              >
-                <div className="flex items-start space-x-3 p-3 rounded-lg border">
-                  <RadioGroupItem value="basic" id="basic" className="mt-1" />
-                  <div className="grid gap-1">
-                    <Label htmlFor="basic" className="font-medium">Basic Assessment</Label>
-                    <p className="text-sm text-muted-foreground">
-                      A quick assessment focusing on essential health metrics. Takes about 5 minutes.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-3 rounded-lg border border-primary bg-primary/5">
-                  <RadioGroupItem value="moderate" id="moderate" className="mt-1" />
-                  <div className="grid gap-1">
-                    <Label htmlFor="moderate" className="font-medium">Moderate Assessment (Recommended)</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Balanced assessment covering key health and lifestyle factors. Takes about 10 minutes.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-3 rounded-lg border">
-                  <RadioGroupItem value="comprehensive" id="comprehensive" className="mt-1" />
-                  <div className="grid gap-1">
-                    <Label htmlFor="comprehensive" className="font-medium">Comprehensive Assessment</Label>
-                    <p className="text-sm text-muted-foreground">
-                      In-depth assessment including detailed health history and goals. Takes about 15-20 minutes.
-                    </p>
-                  </div>
-                </div>
-              </RadioGroup>
-
-              {status?.has_active_assessment && abandonExisting && (
-                <Alert variant="destructive" className="mt-6">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Starting a new assessment will abandon your current progress.
-                  </AlertDescription>
-                </Alert>
-              )}
+              <p className="text-muted-foreground mb-4">
+                Our assessment will ask you questions about your health goals, dietary preferences, and lifestyle to create a tailored plan that works for you.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <Card className="bg-primary/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Basic</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm">Quick 5-minute assessment for essential recommendations</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-primary bg-primary/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Moderate</CardTitle>
+                    <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Recommended</span>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm">10-minute comprehensive health and nutrition assessment</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-primary/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Comprehensive</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm">Detailed 15-minute assessment with in-depth analysis</p>
+                  </CardContent>
+                </Card>
+              </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button onClick={handleStart} disabled={loading || !user}>
-                {loading ? (
-                  <>Starting <Loader className="ml-2" size="sm" /></>
-                ) : (
-                  <>Start Assessment <ArrowRight className="ml-2 h-4 w-4" /></>
-                )}
-              </Button>
+              <StartAssessmentDialog onAssessmentStart={handleAssessmentStart} />
             </CardFooter>
           </Card>
         )}
