@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ const WebAssessmentStart: React.FC = () => {
   const { status, statusLoading, resumeAssessment, loading } = useWebAssessment();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [selectedType, setSelectedType] = useState<"basic" | "moderate" | "comprehensive">("moderate");
 
   // Redirect to assessment page if there's an active session
   React.useEffect(() => {
@@ -28,7 +29,7 @@ const WebAssessmentStart: React.FC = () => {
     }
   };
 
-  const handleResume = () => {
+  const handleResumeClick = () => {
     if (status?.session_id) {
       resumeAssessment(status.session_id);
       navigate('/web-assessment/questions');
@@ -37,6 +38,10 @@ const WebAssessmentStart: React.FC = () => {
 
   const handleViewResults = () => {
     navigate('/web-assessment/results');
+  };
+
+  const handleCardSelect = (type: "basic" | "moderate" | "comprehensive") => {
+    setSelectedType(type);
   };
 
   if (statusLoading) {
@@ -97,7 +102,7 @@ const WebAssessmentStart: React.FC = () => {
                 hasActiveAssessment={true}
                 sessionId={status.session_id}
               />
-              <Button onClick={handleResume}>
+              <Button onClick={handleResumeClick}>
                 Resume <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
@@ -143,7 +148,10 @@ const WebAssessmentStart: React.FC = () => {
                 Our assessment will ask you questions about your health goals, dietary preferences, and lifestyle to create a tailored plan that works for you.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <Card className="bg-primary/5">
+                <Card 
+                  className={`cursor-pointer transition-colors ${selectedType === "basic" ? "border-primary bg-primary/10" : "bg-primary/5 hover:bg-primary/10"}`}
+                  onClick={() => handleCardSelect("basic")}
+                >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Basic</CardTitle>
                   </CardHeader>
@@ -151,7 +159,11 @@ const WebAssessmentStart: React.FC = () => {
                     <p className="text-sm">Quick 5-minute assessment for essential recommendations</p>
                   </CardContent>
                 </Card>
-                <Card className="border-primary bg-primary/5">
+                
+                <Card 
+                  className={`cursor-pointer transition-colors ${selectedType === "moderate" ? "border-primary bg-primary/10" : "bg-primary/5 hover:bg-primary/10"}`}
+                  onClick={() => handleCardSelect("moderate")}
+                >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Moderate</CardTitle>
                     <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Recommended</span>
@@ -160,7 +172,11 @@ const WebAssessmentStart: React.FC = () => {
                     <p className="text-sm">10-minute comprehensive health and nutrition assessment</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-primary/5">
+                
+                <Card 
+                  className={`cursor-pointer transition-colors ${selectedType === "comprehensive" ? "border-primary bg-primary/10" : "bg-primary/5 hover:bg-primary/10"}`}
+                  onClick={() => handleCardSelect("comprehensive")}
+                >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base">Comprehensive</CardTitle>
                   </CardHeader>
@@ -171,7 +187,9 @@ const WebAssessmentStart: React.FC = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <StartAssessmentDialog onAssessmentStart={handleAssessmentStart} />
+              <StartAssessmentDialog 
+                onAssessmentStart={handleAssessmentStart}
+              />
             </CardFooter>
           </Card>
         )}

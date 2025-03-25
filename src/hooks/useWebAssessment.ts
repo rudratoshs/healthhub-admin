@@ -8,13 +8,15 @@ import {
   startWebAssessment,
   getWebAssessmentQuestion,
   submitWebAssessmentResponse,
-  resumeWebAssessment
+  resumeWebAssessment,
+  deleteWebAssessment
 } from '@/lib/webAssessment';
 import {
   WebAssessmentStatus,
   WebAssessmentQuestion,
   StartAssessmentRequest,
-  ResumeAssessmentRequest
+  ResumeAssessmentRequest,
+  DeleteAssessmentRequest
 } from '@/types/webAssessment';
 
 export const useWebAssessment = () => {
@@ -74,10 +76,6 @@ export const useWebAssessment = () => {
         setCurrentQuestion(data.next_question);
         setCurrentResponse(null);
       }
-      toast({
-        title: "Assessment Started",
-        description: "Your assessment has been started successfully."
-      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Failed to start assessment";
@@ -91,6 +89,26 @@ export const useWebAssessment = () => {
       if (error?.response?.data?.session_id) {
         setSessionId(error.response.data.session_id);
       }
+    }
+  });
+
+  // Delete assessment mutation
+  const deleteMutation = useMutation({
+    mutationFn: (data: DeleteAssessmentRequest) => deleteWebAssessment(data),
+    onSuccess: () => {
+      setSessionId(null);
+      setCurrentQuestion(null);
+      setCurrentResponse(null);
+      setPreviousResponses({});
+      statusQuery.refetch(); // Refresh status after deletion
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || "Failed to delete assessment";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
     }
   });
 
@@ -170,6 +188,11 @@ export const useWebAssessment = () => {
   // Handle start assessment
   const startAssessment = (type: "basic" | "moderate" | "comprehensive", abandonExisting: boolean = false) => {
     startMutation.mutate({ assessment_type: type, abandon_existing: abandonExisting });
+  };
+
+  // Handle delete assessment
+  const deleteAssessment = (sid: number) => {
+    deleteMutation.mutate({ session_id: sid });
   };
 
   // Handle resume assessment
@@ -256,11 +279,13 @@ export const useWebAssessment = () => {
     totalPhases,
     startAssessment,
     resumeAssessment,
+    deleteAssessment,
     handleResponseChange,
     submitResponse,
-    loading: startMutation.isPending || resumeMutation.isPending || submitMutation.isPending,
+    loading: startMutation.isPending || resumeMutation.isPending || submitMutation.isPending || deleteMutation.isPending,
     startError: startMutation.error,
     resumeError: resumeMutation.error,
-    submitError: submitMutation.error
+    submitError: submitMutation.error,
+    deleteError: deleteMutation.error
   };
 };

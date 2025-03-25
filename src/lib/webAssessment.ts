@@ -8,7 +8,8 @@ import {
   WebAssessmentResumeResponse,
   StartAssessmentRequest,
   SubmitResponseRequest,
-  ResumeAssessmentRequest
+  ResumeAssessmentRequest,
+  DeleteAssessmentRequest
 } from "@/types/webAssessment";
 import { ApiResponse } from "@/types/api";
 
@@ -51,6 +52,28 @@ export const startWebAssessment = async (data: StartAssessmentRequest): Promise<
   } catch (error) {
     console.error("Failed to start assessment:", error);
     // We don't show toast here because we handle errors in the hook
+    throw error;
+  }
+};
+
+/**
+ * Delete an existing assessment
+ */
+export const deleteWebAssessment = async (data: DeleteAssessmentRequest): Promise<ApiResponse<any>> => {
+  try {
+    const response = await api.post<ApiResponse<any>>("/web-assessment/delete", data);
+    toast({
+      title: "Assessment Deleted",
+      description: "Your previous assessment has been deleted."
+    });
+    return response;
+  } catch (error) {
+    console.error("Failed to delete assessment:", error);
+    toast({
+      title: "Error",
+      description: "Failed to delete your assessment.",
+      variant: "destructive"
+    });
     throw error;
   }
 };

@@ -55,3 +55,7 @@ export interface SubmitResponseRequest {
 export interface ResumeAssessmentRequest {
   session_id: number;
 }
+
+export interface DeleteAssessmentRequest {
+  session_id: number;
+}
