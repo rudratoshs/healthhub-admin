@@ -1,4 +1,5 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getGym } from "@/lib/gyms";
@@ -14,11 +15,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Pencil, Users, Settings } from "lucide-react";
 import AIClientSettings from "@/components/aiConfiguration/AIClientSettings";
+import GymSubscriptionDetails from "@/components/subscription/GymSubscriptionDetails";
+import SubscribeGymDialog from "@/components/subscription/SubscribeGymDialog";
+import CancelGymSubscriptionDialog from "@/components/subscription/CancelGymSubscriptionDialog";
 
 const GymDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const gymId = id ? parseInt(id) : 0;
+  
+  const [isSubscribeDialogOpen, setIsSubscribeDialogOpen] = useState(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["gym", gymId],
@@ -70,6 +77,7 @@ const GymDetail: React.FC = () => {
       <Tabs defaultValue="details">
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="subscription">Subscription</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="details" className="space-y-4">
@@ -113,10 +121,30 @@ const GymDetail: React.FC = () => {
             </CardFooter>
           </Card>
         </TabsContent>
+        <TabsContent value="subscription" className="space-y-4">
+          <GymSubscriptionDetails 
+            gymId={gymId}
+            onSubscribe={() => setIsSubscribeDialogOpen(true)}
+            onUpdateSubscription={() => setIsSubscribeDialogOpen(true)}
+            onCancelSubscription={() => setIsCancelDialogOpen(true)}
+          />
+        </TabsContent>
         <TabsContent value="settings" className="space-y-4">
           <AIClientSettings gymId={gymId} />
         </TabsContent>
       </Tabs>
+      
+      <SubscribeGymDialog 
+        gymId={gymId}
+        isOpen={isSubscribeDialogOpen}
+        onClose={() => setIsSubscribeDialogOpen(false)}
+      />
+      
+      <CancelGymSubscriptionDialog
+        gymId={gymId}
+        isOpen={isCancelDialogOpen}
+        onClose={() => setIsCancelDialogOpen(false)}
+      />
     </div>
   );
 };

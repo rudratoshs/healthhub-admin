@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -56,6 +57,12 @@ import WebAssessmentComplete from "@/pages/webAssessment/WebAssessmentComplete";
 import WebDietPlanList from "@/pages/webDietPlan/WebDietPlanList";
 import WebDietPlanDetail from "@/pages/webDietPlan/WebDietPlanDetail";
 import WebMealDetail from "@/pages/webDietPlan/WebMealDetail";
+
+// Subscription pages
+import SubscriptionPlans from "@/pages/subscription/SubscriptionPlans";
+import CreateSubscriptionPlan from "@/pages/subscription/CreateSubscriptionPlan";
+import EditSubscriptionPlan from "@/pages/subscription/EditSubscriptionPlan";
+import SubscriptionPlanDetail from "@/pages/subscription/SubscriptionPlanDetail";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -170,6 +177,12 @@ const App = () => (
                 path="web-diet-plan/meal/:mealId"
                 element={<WebMealDetail />}
               />
+
+              {/* Subscription Routes */}
+              <Route path="subscription-plans" element={<SubscriptionPlans />} />
+              <Route path="subscription-plans/create" element={<CreateSubscriptionPlan />} />
+              <Route path="subscription-plans/:id" element={<SubscriptionPlanDetail />} />
+              <Route path="subscription-plans/:id/edit" element={<EditSubscriptionPlan />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

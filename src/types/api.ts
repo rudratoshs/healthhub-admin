@@ -1,3 +1,4 @@
+
 export * from './auth';
 
 /**
@@ -32,3 +33,6 @@ export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
 }
+
+// Add the export for subscription types
+export * from './subscription';
