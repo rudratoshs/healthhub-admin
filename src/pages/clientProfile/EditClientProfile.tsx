@@ -58,7 +58,7 @@ const EditClientProfile: React.FC = () => {
     <div className="container mx-auto p-6 font-poppins">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-playfair text-primary-900">Edit Client Profile</h1>
+          <h1 className="text-2xl md:text-3xl font-bold font-poppins text-primary-900">Edit Client Profile</h1>
           <p className="text-muted-foreground">Update health and nutrition details</p>
         </div>
         <Button variant="outline" onClick={() => navigate(`/users/${userId}/profile`)}>
@@ -81,7 +81,7 @@ const EditClientProfile: React.FC = () => {
 
       <Card className="shadow-md border-primary-100">
         <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 pb-4">
-          <CardTitle className="text-xl text-primary-900 font-playfair">Profile Information</CardTitle>
+          <CardTitle className="text-xl text-primary-900 font-poppins">Profile Information</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
           {data ? (

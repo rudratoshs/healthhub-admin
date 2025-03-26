@@ -1,54 +1,54 @@
-/* src/App.css */
-/* Add any app-specific styles that can't be handled by Tailwind here */
 
-/* For example, keyframe animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em rgba(100, 108, 255, 0.8));
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em rgba(97, 218, 251, 0.8));
 }
 
-/* Custom scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 4px;
+.card {
+  padding: 2em;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  background: var(--card);
+  transition: all 0.3s ease;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-/* Page transitions */
-.page-transition-enter {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.page-transition-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.page-transition-exit {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.page-transition-exit-active {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 300ms, transform 300ms;
+.read-the-docs {
+  color: var(--muted-foreground);
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
 }

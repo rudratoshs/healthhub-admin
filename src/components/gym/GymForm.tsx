@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -46,6 +45,17 @@ const GymForm: React.FC<GymFormProps> = ({
       ...defaultValues,
     },
   });
+
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        name: "",
+        address: "",
+        phone: "",
+        ...defaultValues,
+      });
+    }
+  }, [defaultValues, form]);
 
   return (
     <Form {...form}>

@@ -24,6 +24,7 @@ import {
   BarChart3,
   LogOut,
   Settings,
+  UtensilsCrossed
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +41,11 @@ const Navbar: React.FC = () => {
       icon: <LayoutDashboard size={16} />,
     },
     { label: "Users", path: "/users", icon: <Users size={16} /> },
+    {
+      label: "Diet Plans",
+      path: "/diet-plans",
+      icon: <UtensilsCrossed size={16} />,
+    },
     {
       label: "Meal Plans",
       path: "/meal-plans",

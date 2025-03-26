@@ -43,7 +43,7 @@ const CreateClientProfile: React.FC = () => {
     <div className="container mx-auto p-6 font-poppins">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-playfair text-primary-900">Create Client Profile</h1>
+          <h1 className="text-2xl md:text-3xl font-bold font-poppins text-primary-900">Create Client Profile</h1>
           <p className="text-muted-foreground">Set up health and nutrition details</p>
         </div>
         <Button variant="outline" onClick={() => navigate(`/users/${userId}`)}>
@@ -66,7 +66,7 @@ const CreateClientProfile: React.FC = () => {
 
       <Card className="shadow-md border-primary-100">
         <CardHeader className="bg-gradient-to-r from-primary-50 to-green-50 pb-4">
-          <CardTitle className="text-xl text-primary-900 font-playfair flex items-center">
+          <CardTitle className="text-xl text-primary-900 font-poppins flex items-center">
             <Plus size={18} className="mr-2 text-green-600" />
             New Profile Information
           </CardTitle>

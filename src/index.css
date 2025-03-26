@@ -1,7 +1,8 @@
-/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"); */
 
 @layer base {
   :root {
@@ -38,165 +39,795 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+* {
+  @apply border-border;
+  font-family: "Inter", sans-serif;
+}
 
-  body {
-    @apply bg-background text-foreground antialiased;
-  }
+body {
+  @apply bg-background text-foreground;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+/* 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Playfair Display", serif;
+} */
 
-  .glass {
-    @apply bg-white/50 backdrop-blur-md border border-white/20 rounded-xl shadow-sm;
-  }
+/* Glass effect */
+.glass {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg;
+}
 
-  .card-transition {
-    @apply transition-all duration-300 ease-in-out hover:shadow-md hover:-translate-y-1;
-  }
+/* Card with hover effect */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
 }
 
 @layer components {
-  /* Button animation styles */
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium 
-           transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
+  /* Page Transitions */
+  .page-transition {
+    @apply animate-fade-in;
   }
 
-  .btn:hover {
-    @apply transform -translate-y-0.5 shadow-md;
+  /* Split Screen Layout */
+  .split-screen-content {
+    @apply flex min-h-screen w-full items-center;
   }
 
-  .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-[#5DD484] focus:ring-primary;
+  .split-screen-content-left {
+    @apply w-full bg-gradient-to-br from-primary-50 to-primary-100 p-8 md:w-1/2 md:p-12 lg:p-16 animate-slide-in-left;
   }
 
-  .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-[#4ECB75] focus:ring-secondary;
+  .split-screen-content-right {
+    @apply hidden w-1/2 bg-gradient-to-br from-primary-500 to-primary-700 md:flex md:items-center md:justify-center animate-slide-in-right;
   }
 
-  .btn-accent {
-    @apply bg-accent text-accent-foreground hover:bg-[#FF9D5F] focus:ring-accent;
+  /* Form Styling */
+  .form-container {
+    @apply mx-auto max-w-md space-y-6 bg-white p-8 rounded-xl shadow-xl;
   }
 
-  .btn-outline {
-    @apply border border-input bg-background hover:bg-muted hover:text-primary;
+  /* Dashboard Layout */
+  .dashboard-layout {
+    @apply flex min-h-screen flex-col bg-gradient-to-br from-background to-primary-50/30;
   }
 
-  /* Card styles with animation */
-  .fitness-card {
-    @apply bg-card p-6 rounded-lg border border-border shadow-sm
-           transition-all duration-300 ease-in-out;
+  .dashboard-main {
+    @apply flex-1 p-4 md:p-6 lg:p-8;
   }
 
-  .fitness-card:hover {
-    @apply transform -translate-y-1 shadow-md;
+  .dashboard-grid {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
   }
 
-  /* Stats box similar to the Fitness Club design */
-  .stats-box {
-    @apply p-4 rounded-lg text-white flex flex-col justify-center items-center;
+  /* Advanced Card Styles */
+  .feature-card {
+    @apply relative overflow-hidden rounded-xl bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
 
-  .stats-value {
-    @apply text-3xl font-bold;
+  .feature-card::before {
+    @apply absolute -right-12 -top-12 h-24 w-24 rounded-full bg-primary/10 content-[''] transition-all duration-500;
   }
 
-  .stats-label {
-    @apply text-sm opacity-90;
+  .feature-card:hover::before {
+    @apply scale-[6];
   }
 
-  /* Primary stats box */
-  .stats-primary {
-    @apply bg-primary;
+  /* Loader styling */
+  .loader {
+    @apply relative h-10 w-10;
   }
 
-  /* Secondary stats box */
-  .stats-secondary {
-    @apply bg-secondary;
+  .loader:before,
+  .loader:after {
+    @apply content-[''] absolute top-0 left-0 w-full h-full rounded-full;
+    animation: pulse 2s linear infinite;
+  }
+
+  .loader:before {
+    @apply bg-primary opacity-70;
+    animation-delay: 0.25s;
+  }
+
+  .loader:after {
+    @apply bg-secondary opacity-70;
+  }
+}
+
+/* Custom Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(0.2);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom Utility Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.7s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
   }
 }
 
 @layer utilities {
-  .hover-underline {
-    position: relative;
-    transition: color 0.3s ease-in-out;
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
   }
 
-  .hover-underline::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -2px;
-    width: 0;
-    height: 2px;
-    background-color: hsl(var(--primary));
-    transition: all 0.3s ease-in-out;
-    transform: translateX(-50%);
+  .animate-slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
   }
 
-  .hover-underline:hover::after {
-    width: 100%;
+  .animate-slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
   }
 
-  .active-underline {
-    position: relative;
-    color: hsl(var(--primary-dark));
+  .animate-slide-in-up {
+    animation: slideInUp 0.7s ease-out forwards;
   }
 
-  .active-underline::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -3px;
-    width: 80%;
-    height: 3px;
-    background: linear-gradient(
-      to right,
-      hsl(var(--primary)) 0%,
-      hsl(var(--secondary)) 100%
-    );
-    transform: translateX(-50%);
-    border-radius: 2px;
-  }
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  /* Animation utilities */
-  .hover-lift {
-    @apply transition-all duration-300 ease-in-out;
-  }
-
-  .hover-lift:hover {
-    @apply transform -translate-y-1 shadow-md;
-  }
-
-  /* Color utilities matching Fitness Club palette */
-  .text-success {
-    @apply text-[#38CB89];
-  }
-
-  .text-info {
-    @apply text-[#2E90FA];
-  }
-
-  .text-warning {
-    @apply text-[#FF8D3F];
-  }
-
-  .text-purple {
-    @apply text-[#7F56D9];
-  }
-
-  .bg-light-green {
-    @apply bg-[#e8fbe2];
-  }
-
-  .bg-light-blue {
-    @apply bg-[#EEF4FF];
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
   }
 }
+
+/* Keyframes for Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 172, 154, 0.7);
+    opacity: 1;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 172, 154, 0);
+    opacity: 0;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 172, 154, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Utility Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.7s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  20% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  80% {
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom Utility Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.7s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+}
+
+/* Glass effect */
+.glass {
+  @apply bg-white/60 backdrop-blur-lg border border-white/20 shadow-md;
+}
+
+.glass-dark {
+  @apply bg-background/80 backdrop-blur-lg border border-border/30 shadow-md;
+}
+
+/* Card with hover effect */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Link hover effect */
+.link-hover {
+  @apply relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full;
+}
+
+/* Button hover animation */
+.btn-hover {
+  @apply relative overflow-hidden transition-all duration-300;
+}
+
+.btn-hover::before {
+  @apply absolute inset-0 -z-10 scale-x-0 bg-primary/10 transition-transform duration-300 content-[''] origin-right;
+}
+
+.btn-hover:hover::before {
+  @apply scale-x-100 origin-left;
+}
+
+/* Image with blur-up loading */
+.blur-up {
+  -webkit-filter: blur(5px);
+  filter: blur(5px);
+  transition: filter 400ms ease-in, -webkit-filter 400ms ease-in;
+}
+
+.blur-up.lazyloaded {
+  -webkit-filter: blur(0);
+  filter: blur(0);
+}
+
+/* Page Transitions */
+.page-transition {
+  @apply animate-fade-in;
+}
+
+/* Split Screen Layout */
+.split-screen-content {
+  @apply flex min-h-screen w-full items-center;
+}
+
+.split-screen-content-left {
+  @apply w-full bg-primary-50 p-8 md:w-1/2 md:p-12 lg:p-16 animate-slide-in-left;
+}
+
+.split-screen-content-right {
+  @apply hidden w-1/2 bg-primary md:flex md:items-center md:justify-center animate-slide-in-right;
+}
+
+/* Form Styling */
+.form-container {
+  @apply mx-auto max-w-md space-y-6 bg-white p-8 rounded-lg shadow-sm;
+}
+
+/* Dashboard Layout */
+.dashboard-layout {
+  @apply flex min-h-screen flex-col;
+}
+
+.dashboard-main {
+  @apply flex-1 p-4 md:p-6 lg:p-8;
+}
+
+.dashboard-grid {
+  @apply grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+/* Advanced Card Styles */
+.feature-card {
+  @apply relative overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+.feature-card::before {
+  @apply absolute -right-12 -top-12 h-24 w-24 rounded-full bg-primary/10 content-[''] transition-all duration-500;
+}
+
+.feature-card:hover::before {
+  @apply scale-[6];
+}
+
+/* Floating Elements */
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-delayed {
+  animation: float 6s ease-in-out 1s infinite;
+}
+
+.floating-fast {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Glowing Effect */
+.glow {
+  @apply relative;
+}
+
+.glow::after {
+  @apply absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 content-[''];
+  box-shadow: 0 0 20px 2px theme("colors.primary.500");
+}
+
+.glow:hover::after {
+  @apply opacity-100;
+}
+
+/* Animated Gradient Button */
+.gradient-btn {
+  @apply relative overflow-hidden bg-gradient-to-r from-primary-500 to-secondary transition-all duration-300;
+  background-size: 200% 100%;
+  background-position: 0 0;
+}
+
+.gradient-btn:hover {
+  background-position: 100% 0;
+}
+
+/* Polaroid Effect */
+.polaroid {
+  @apply bg-white p-2 pb-8 shadow-md rotate-0 transition-all duration-300;
+}
+
+.polaroid:hover {
+  @apply rotate-2 shadow-lg;
+}
+
+/* Text Highlight Animation */
+.highlight-text {
+  @apply relative inline-block;
+}
+
+.highlight-text::before {
+  @apply absolute bottom-0 left-0 h-[30%] w-0 bg-primary/20 transition-all duration-300 content-[''] -z-10;
+}
+
+.highlight-text:hover::before {
+  @apply w-full;
+}
+
+/* Animated Underline */
+.animated-underline {
+  @apply relative;
+}
+
+.animated-underline::after {
+  @apply absolute bottom-0 left-0 h-[2px] w-0 bg-primary transition-all duration-300 content-[''];
+}
+
+.animated-underline:hover::after {
+  @apply w-full;
+}
+
+/* Pulse Animation */
+.pulse {
+  @apply relative;
+}
+
+.pulse::before {
+  @apply absolute inset-0 rounded-full opacity-0 content-[''];
+  box-shadow: 0 0 0 0 theme("colors.primary.500");
+  animation: pulse 2s infinite;
+}
+
+/* Staggered Animation for Lists */
+.stagger-item {
+  @apply opacity-0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.stagger-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stagger-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stagger-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.stagger-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.stagger-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* Ripple Effect */
+.ripple {
+  @apply relative overflow-hidden;
+}
+
+.ripple::after {
+  @apply absolute h-full w-full scale-0 rounded-full bg-white/20 content-[''];
+  transform-origin: center;
+  animation: ripple 0.6s ease-out;
+}
+
+/* Shimmer Effect for Loading States */
+.shimmer {
+  @apply relative overflow-hidden bg-gray-200;
+}
+
+.shimmer::after {
+  @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent content-[''];
+  animation: shimmer 1.5s infinite;
+}
+
+/* Keyframes for Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 172, 154, 0.7);
+    opacity: 1;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 172, 154, 0);
+    opacity: 0;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 172, 154, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Utility Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.7s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  20% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  80% {
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Custom Utility Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.7s ease-out forwards;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.7s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+}
+
 /* Enhanced styling for client profile components */
 
 /* Main container styles */
@@ -623,4 +1254,164 @@
 
 .weight-goal--maintenance {
   color: #4338ca;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  .glass {
+    @apply bg-white/50 backdrop-blur-md border border-white/20 rounded-xl shadow-sm;
+  }
+
+  .card-transition {
+    @apply transition-all duration-300 ease-in-out hover:shadow-md hover:-translate-y-1;
+  }
+}
+
+@layer components {
+  /* Button animation styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium 
+           transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn:hover {
+    @apply transform -translate-y-0.5 shadow-md;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-[#5DD484] focus:ring-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-[#4ECB75] focus:ring-secondary;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-[#FF9D5F] focus:ring-accent;
+  }
+
+  .btn-outline {
+    @apply border border-input bg-background hover:bg-muted hover:text-primary;
+  }
+
+  /* Card styles with animation */
+  .fitness-card {
+    @apply bg-card p-6 rounded-lg border border-border shadow-sm
+           transition-all duration-300 ease-in-out;
+  }
+
+  .fitness-card:hover {
+    @apply transform -translate-y-1 shadow-md;
+  }
+
+  /* Stats box similar to the Fitness Club design */
+  .stats-box {
+    @apply p-4 rounded-lg text-white flex flex-col justify-center items-center;
+  }
+
+  .stats-value {
+    @apply text-3xl font-bold;
+  }
+
+  .stats-label {
+    @apply text-sm opacity-90;
+  }
+
+  /* Primary stats box */
+  .stats-primary {
+    @apply bg-primary;
+  }
+
+  /* Secondary stats box */
+  .stats-secondary {
+    @apply bg-secondary;
+  }
+}
+
+@layer utilities {
+  .hover-underline {
+    position: relative;
+    transition: color 0.3s ease-in-out;
+  }
+
+  .hover-underline::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background-color: hsl(var(--primary));
+    transition: all 0.3s ease-in-out;
+    transform: translateX(-50%);
+  }
+
+  .hover-underline:hover::after {
+    width: 100%;
+  }
+
+  .active-underline {
+    position: relative;
+    color: hsl(var(--primary-dark));
+  }
+
+  .active-underline::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -3px;
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 100%
+    );
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animation utilities */
+  .hover-lift {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .hover-lift:hover {
+    @apply transform -translate-y-1 shadow-md;
+  }
+
+  /* Color utilities matching Fitness Club palette */
+  .text-success {
+    @apply text-[#38CB89];
+  }
+
+  .text-info {
+    @apply text-[#2E90FA];
+  }
+
+  .text-warning {
+    @apply text-[#FF8D3F];
+  }
+
+  .text-purple {
+    @apply text-[#7F56D9];
+  }
+
+  .bg-light-green {
+    @apply bg-[#e8fbe2];
+  }
+
+  .bg-light-blue {
+    @apply bg-[#EEF4FF];
+  }
 }

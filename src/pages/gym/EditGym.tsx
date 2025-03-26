@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -15,11 +14,13 @@ const EditGym: React.FC = () => {
   const navigate = useNavigate();
   const gymId = parseInt(id as string);
 
-  const { data: gym, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["gym", gymId],
     queryFn: () => getGym(gymId),
     enabled: !isNaN(gymId),
   });
+
+  const gym = data?.data;
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: GymFormValues) => updateGym(gymId, data),
@@ -58,7 +59,8 @@ const EditGym: React.FC = () => {
         <div className="rounded-lg border bg-card p-8 text-center">
           <h3 className="mb-2 text-xl font-semibold">Gym not found</h3>
           <p className="mb-4 text-muted-foreground">
-            The gym you're looking for doesn't exist or you don't have permission to view it.
+            The gym you're looking for doesn't exist or you don't have
+            permission to view it.
           </p>
           <Button onClick={() => navigate("/gyms")}>
             <ArrowLeft size={16} className="mr-2" />

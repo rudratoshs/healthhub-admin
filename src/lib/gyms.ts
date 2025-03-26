@@ -38,21 +38,21 @@ export const getGymUsers = async (
   params: { role?: string; status?: string; page?: number } = {}
 ): Promise<UserListResponse> => {
   const searchParams = new URLSearchParams();
-  
+
   if (params.role && params.role !== 'all') {
     searchParams.append('role', params.role);
   }
-  
+
   if (params.status && params.status !== 'all') {
     searchParams.append('status', params.status);
   }
-  
+
   if (params.page) {
     searchParams.append('page', params.page.toString());
   }
-  
+
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
-  
+
   return apiRequest<UserListResponse>(`/gyms/${gymId}/users${queryString}`);
 };
 
